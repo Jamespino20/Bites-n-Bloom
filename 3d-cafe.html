@@ -8,7 +8,8 @@
   <script type="importmap">
     {
       "imports": {
-        "three": "https://cdn.jsdelivr.net/npm/three@0.164.1/build/three.module.js"
+        "three": "https://cdn.jsdelivr.net/npm/three@0.164.1/build/three.module.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.164.1/examples/jsm/"
       }
     }
   </script>
@@ -429,6 +430,20 @@
     chibi.scale.set(1.0, 1.35, 1);
     chibi.position.set(1.35, 2.1, -5.7);
     interior.add(chibi);
+    // Hunyuan Loreen upgrade: real generated model replaces the PNG sprite
+    // once fetched (sprite stays as the offline/instant fallback).
+    // If she faces away on demo day, flip the Math.PI line below.
+    import("three/addons/loaders/GLTFLoader.js").then(({ GLTFLoader }) => {
+      new GLTFLoader().load("assets/models/chibi-hunyuan-web.glb", glb => {
+        const loreen = glb.scene;
+        loreen.scale.setScalar(0.6);
+        loreen.position.set(1.35, 1.44, -5.5);
+        // loreen.rotation.y = Math.PI;
+        loreen.traverse(o => { if (o.isMesh) { o.castShadow = true; } });
+        interior.add(loreen);
+        interior.remove(chibi);
+      }, undefined, () => {});
+    }).catch(() => {});
     cylinder(interior, 0.025, 0.025, 0.35, [0, 2.9, -6.1], mats.darkWood, 8);
 
     // Tables, stools, and flower arrangements
