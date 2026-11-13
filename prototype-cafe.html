@@ -3,9 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="data:,">
 <title>Sibol Cafe: Bites & Blooms — Prototype</title>
 <style>
-:root{--green:#234436;--green2:#2f5d49;--cream:#f6f1e7;--card:#fffdf8;--accent:#c98a4b;--pink:#e8a7c3;--ink:#23211d;--mut:#7a756c}
+:root{--green:#234436;--green2:#2f5d49;--cream:#f6f1e7;--card:#fffdf8;--accent:#c98a4b;--pink:#e8a7c3;--ink:#23211d;--mut:#5d5850}
 *{box-sizing:border-box}body{margin:0;font-family:"Segoe UI",system-ui,Roboto,Arial;background:radial-gradient(1200px 400px at 20% -5%,#fff 0%,var(--cream) 60%);color:var(--ink)}
 header{background:linear-gradient(135deg,var(--green),var(--green2));color:#fff;padding:16px;position:sticky;top:0;z-index:5;box-shadow:0 2px 12px rgba(0,0,0,.18)}
 header h1{margin:0;font-family:Georgia,"Times New Roman",serif;font-weight:500;letter-spacing:.5px;font-size:26px}
@@ -61,7 +62,7 @@ code{background:#efe9d9;padding:2px 6px;border-radius:6px}
 <section id="menuList"></section>
 <aside>
 <div class="card cashier"><img id="chibiMain" src="assets/loreen-chibi.png" alt="Chibi Loreen" style="width:64px;height:64px;border-radius:50%;object-fit:cover;background:var(--green)" onerror="this.outerHTML='<div class=&quot;avatar&quot;>L</div>'"><div style="flex:1"><b>Chibi Loreen — cashier</b><div id="moodBubble" style="background:#eef4ee;border-radius:10px;padding:6px 9px;font-size:13px;margin-top:4px">Welcome to Sibol! Try the Biscoff Matcha 🌸</div><div style="display:flex;gap:6px;align-items:center;margin-top:6px"><div id="spriteWin" title="expressions" style="width:54px;height:54px;border-radius:12px;background:url(assets/sprites.png) 0 0/300% 400%;border:1px solid #d8d2c4"></div><span class="note">12 moods — auto-reacts when you add / reserve / claim.</span></div></div></div>
-<div class="card"><b>Blooms & food — real shots</b><div class="note">Save uploads as <code>assets/bouquet-1/2/3.jpg</code> + <code>assets/food-wings.jpg</code>. They render here offline.</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px">
+<div class="card"><b>Blooms & food — real Sibol shots</b><div class="note">Fresh from the cafe: signature bouquets + wings spread.</div><div class="gallery" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px">
 <img src="assets/bouquet-1.jpg" style="width:100%;border-radius:10px" onerror="this.style.display='none'">
 <img src="assets/bouquet-2.jpg" style="width:100%;border-radius:10px" onerror="this.style.display='none'">
 <img src="assets/bouquet-3.jpg" style="width:100%;border-radius:10px" onerror="this.style.display='none'">
@@ -109,7 +110,7 @@ cats.slice(1).filter(c=>cat==="All"||c===cat).forEach(c=>{
 const items=MENU.map((m,i)=>({...m,idx:i})).filter(m=>m[0]===c&&(m[1].toLowerCase().includes(q)));
 if(!items.length)return;
 const d=document.createElement('div');d.className='card';d.innerHTML=`<h3 style="margin:0">${c}</h3>`;
-items.forEach(m=>{const p=m[3]??m[2];const row=document.createElement('div');row.className='item';row.innerHTML=`<div><b>${m[1]}</b><span class="note">${m[0]}</span></div><div style="display:flex;gap:8px;align-items:center"><span class="price">₱${p}</span><button class="btn">Add</button></div>`;row.querySelector('button').onclick=()=>customize(m.idx);d.appendChild(row)});
+items.forEach(m=>{const p=m[3]??m[2];const row=document.createElement('div');row.className='item';row.innerHTML=`<div><b>${m[1]}</b></div><div style="display:flex;gap:8px;align-items:center"><span class="price">₱${p}</span><button class="btn">Add</button></div>`;row.querySelector('button').onclick=()=>customize(m.idx);d.appendChild(row)});
 list.appendChild(d)})}
 document.getElementById('search').oninput=drawMenu;
 function customize(i){
