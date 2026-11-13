@@ -437,7 +437,7 @@
       new GLTFLoader().load("assets/models/chibi-hunyuan-web.glb", glb => {
         const loreen = glb.scene;
         loreen.scale.setScalar(1.15);
-        loreen.position.set(1.2, 0, -6.7);
+        loreen.position.set(2.6, 0, -6.5);
         // loreen.rotation.y = Math.PI;
         loreen.traverse(o => { if (o.isMesh) { o.castShadow = true; } });
         interior.add(loreen);
