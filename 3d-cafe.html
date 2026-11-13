@@ -738,12 +738,24 @@
     camera.lookAt(views.outside.target);
     animate();
 
+    // Portrait phones collapse horizontal FOV — stand the entrance camera
+    // back and widen it, otherwise the sign fills the whole screen.
+    function frameForAspect() {
+      const wide = window.innerWidth / window.innerHeight >= 0.9;
+      views.outside.position.set(0, wide ? 3.7 : 6.8, wide ? 14.5 : 22.5);
+      camera.fov = wide ? 48 : 64;
+      camera.updateProjectionMatrix();
+      if (currentView === "outside") targetPosition.copy(views.outside.position);
+    }
+
     window.addEventListener("resize", () => {
       camera.aspect = window.innerWidth / window.innerHeight;
       camera.updateProjectionMatrix();
+      frameForAspect();
       renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.75));
       renderer.setSize(window.innerWidth, window.innerHeight);
     });
+    frameForAspect();
   </script>
 </body>
 </html>
