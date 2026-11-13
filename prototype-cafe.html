@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sibol Cafe: Bites & Blooms — Prototype</title>
+<style>
+:root{--green:#234436;--green2:#2f5d49;--cream:#f6f1e7;--card:#fffdf8;--accent:#c98a4b;--pink:#e8a7c3;--ink:#23211d;--mut:#7a756c}
+*{box-sizing:border-box}body{margin:0;font-family:"Segoe UI",system-ui,Roboto,Arial;background:radial-gradient(1200px 400px at 20% -5%,#fff 0%,var(--cream) 60%);color:var(--ink)}
+header{background:linear-gradient(135deg,var(--green),var(--green2));color:#fff;padding:16px;position:sticky;top:0;z-index:5;box-shadow:0 2px 12px rgba(0,0,0,.18)}
+header h1{margin:0;font-family:Georgia,"Times New Roman",serif;font-weight:500;letter-spacing:.5px;font-size:26px}
+header h1 small{font-size:12px;letter-spacing:3px;opacity:.85}
+header small.sub{opacity:.85;font-size:12px}
+nav{display:flex;gap:8px;padding:10px 12px;position:sticky;top:76px;background:rgba(246,241,231,.95);backdrop-filter:blur(4px);z-index:4;flex-wrap:nowrap;overflow-x:auto}
+nav button{border:1px solid var(--green);background:#fff;color:var(--green);border-radius:999px;padding:8px 15px;font-size:14px;white-space:nowrap;box-shadow:0 1px 0 rgba(0,0,0,.05)}
+nav button.on{background:var(--green);color:#fff;box-shadow:0 2px 8px rgba(35,68,54,.35)}
+#search{margin:10px 12px 0;width:calc(100% - 24px);padding:12px 14px;border-radius:12px;border:1px solid #d8d2c4;font-size:15px;background:#fff}
+main{max-width:1020px;margin:0 auto;padding:12px;display:grid;gap:14px}
+@media(min-width:860px){main{grid-template-columns:1fr 350px}}
+.card{background:var(--card);border-radius:18px;padding:14px;box-shadow:0 4px 18px rgba(35,68,54,.08);border:1px solid #ece5d4}
+.card h3{margin:0 0 6px;font-family:Georgia,serif;color:var(--green)}
+.item{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:11px 4px;border-bottom:1px dashed #e5ddc9}
+.item:last-child{border-bottom:0}
+.item b{display:block;font-size:15px}.item .price{color:var(--green);font-weight:800;white-space:nowrap;background:#eef4ee;border-radius:8px;padding:4px 8px}
+.btn{background:var(--green);color:#fff;border:0;border-radius:12px;padding:10px 16px;font-size:14px;font-weight:700;box-shadow:0 2px 8px rgba(35,68,54,.3)}
+.btn:active{transform:scale(.97)}.btn.ghost{background:#fff;color:var(--green);border:1.5px solid var(--green);box-shadow:none}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}
+.chips button{border-radius:999px;border:1px solid #c9c2b2;background:#fff;padding:7px 12px;font-size:13px}
+.chips button.on{background:var(--green);color:#fff;border-color:var(--green)}
+#cart{position:sticky;top:132px}
+#modal{position:fixed;inset:0;background:rgba(20,30,25,.5);display:none;align-items:flex-end;justify-content:center;z-index:20}
+#modal.open{display:flex}
+.sheet{background:#fffdf8;width:100%;max-width:540px;border-radius:20px 20px 0 0;padding:18px;max-height:88vh;overflow:auto;border-top:4px solid var(--green)}
+.petal{position:fixed;width:14px;height:14px;border-radius:60% 0 60% 0;background:var(--pink);pointer-events:none;z-index:50;animation:fall 1.6s ease-out forwards}
+@keyframes fall{to{transform:translateY(220px) rotate(220deg);opacity:0}}
+#qr{display:grid;grid-template-columns:repeat(12,14px);gap:2px;margin:10px 0;justify-content:start}
+#qr i{width:14px;height:14px;background:#eee;border-radius:3px}#qr i.f{background:var(--green)}
+.tabs{display:flex;gap:8px;margin:12px 12px 0;max-width:1020px}
+.tabs button{flex:1;padding:11px;border-radius:12px;border:1.5px solid var(--green);background:#fff;color:var(--green);font-weight:700}
+.tabs button.on{background:var(--green);color:#fff}
+.threebox{background:linear-gradient(160deg,#12261f,#1d3a2f);color:#cfe3d8;border-radius:18px;padding:14px;min-height:170px;position:relative;overflow:hidden;border:1px solid #2c4a3e}
+.cashier{display:flex;gap:12px;align-items:center}
+.avatar{width:56px;height:56px;border-radius:50%;background:var(--green);color:#fff;display:flex;align-items:center;justify-content:center;font-size:24px}
+.note{font-size:13px;color:var(--mut)}
+code{background:#efe9d9;padding:2px 6px;border-radius:6px}
+.gallery img{aspect-ratio:1/1;object-fit:cover;box-shadow:0 2px 10px rgba(0,0,0,.12)}
+</style>
+</head>
+<body>
+<header style="display:flex;gap:12px;align-items:center">
+<img src="assets/logo-sibol.png" alt="Sibol" style="width:52px;height:52px;border-radius:50%;background:#fff;object-fit:cover" onerror="this.style.display='none'">
+<div><h1>Sibol <small>COFFEE • FLOWERS</small></h1>
+<small>Where Growth Begins — Bites & Blooms prototype (static, offline-ready)</small></div>
+</header>
+<div class="tabs" style="margin-top:10px">
+<button class="on" id="tMenu">Menu</button><button id="tTrack">Track / Claim</button><button id="tStaff">Staff Claim</button>
+</div>
+<nav id="cats"></nav>
+<input id="search" placeholder="Search menu — try matcha, wings, carbonara…">
+<main>
+<section id="menuList"></section>
+<aside>
+<div class="card cashier"><img id="chibiMain" src="assets/loreen-chibi.png" alt="Chibi Loreen" style="width:64px;height:64px;border-radius:50%;object-fit:cover;background:var(--green)" onerror="this.outerHTML='<div class=&quot;avatar&quot;>L</div>'"><div style="flex:1"><b>Chibi Loreen — cashier</b><div id="moodBubble" style="background:#eef4ee;border-radius:10px;padding:6px 9px;font-size:13px;margin-top:4px">Welcome to Sibol! Try the Biscoff Matcha 🌸</div><div style="display:flex;gap:6px;align-items:center;margin-top:6px"><div id="spriteWin" title="expressions" style="width:54px;height:54px;border-radius:12px;background:url(assets/sprites.png) 0 0/300% 400%;border:1px solid #d8d2c4"></div><span class="note">12 moods — auto-reacts when you add / reserve / claim.</span></div></div></div>
+<div class="card"><b>Blooms & food — real shots</b><div class="note">Save uploads as <code>assets/bouquet-1/2/3.jpg</code> + <code>assets/food-wings.jpg</code>. They render here offline.</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px">
+<img src="assets/bouquet-1.jpg" style="width:100%;border-radius:10px" onerror="this.style.display='none'">
+<img src="assets/bouquet-2.jpg" style="width:100%;border-radius:10px" onerror="this.style.display='none'">
+<img src="assets/bouquet-3.jpg" style="width:100%;border-radius:10px" onerror="this.style.display='none'">
+<img src="assets/food-wings.jpg" style="width:100%;border-radius:10px" onerror="this.style.display='none'">
+</div></div>
+<div class="card" id="cart"><h3 style="margin:0 0 8px">Cart</h3><div id="cartItems"><span class="note">Empty — tap Add.</span></div><div id="cartTotal" style="margin:8px 0;font-weight:700"></div>
+<input id="custName" placeholder="Name for reservation" style="width:100%;padding:9px;margin-bottom:6px;border-radius:8px;border:1px solid #ccc">
+<input id="custTable" placeholder="Table (e.g. T3)" style="width:100%;padding:9px;margin-bottom:6px;border-radius:8px;border:1px solid #ccc">
+<button class="btn" id="reserve" style="width:100%">Reserve + get QR</button>
+<div id="qrWrap" style="display:none"><div>Claim code: <b id="claimCode"></b></div><div id="qr"></div><div class="note">Show this at counter or scan on staff Claim view.</div></div></div>
+<div class="card threebox" id="threeSlot"><b>Cafe views + 3D room (primitives, offline)</b>
+<div class="chips" style="margin:8px 0"><button class="on" id="vCounter">Counter</button><button id="vWall">Freedom wall</button><button id="v3d">3D room</button></div>
+<div id="viewCounter"><img src="assets/counterview.png" loading="lazy" style="width:100%;border-radius:10px" onerror="this.outerHTML='<span class=&quot;note&quot;>Add assets/counterview.png</span>'"><div class="note">View 1/4 — real counter: La Marzocco, grinder, syrups, MATCHA stand.</div></div>
+<div id="viewWall" style="display:none"><img src="assets/freedomwall-view.png" loading="lazy" style="width:100%;border-radius:10px" onerror="this.outerHTML='<span class=&quot;note&quot;>Add assets/freedomwall-view.png</span>'"><div class="note">View 2/4 — lounge: sofa, arch mirror, sticky-note freedom wall. Views 3–4 pending.</div></div>
+<div id="view3d" style="display:none"><div class="note" id="threeMsg">Primitives room: counter box + cup + bouquet + chibi billboard, textured with your real photos. Drag to orbit.</div><canvas id="c3d" width="600" height="280" style="width:100%;background:#0e1f19;border-radius:10px;touch-action:none"></canvas></div>
+<div style="margin-top:8px"><input type="file" id="photoUp" accept="image/*"><span class="note"> preview any photo here</span><div><img id="photoPrev" style="max-width:100%;border-radius:10px;margin-top:6px;display:none"></div></div></div>
+<script src="assets/three.min.js"></script>
+</aside>
+</main>
+<section id="trackView" style="display:none;max-width:960px;margin:0 auto;padding:12px"><div class="card"><h3>Order tracking</h3><div id="trackList"><span class="note">No orders yet.</span></div></div></section>
+<section id="staffView" style="display:none;max-width:960px;margin:0 auto;padding:12px"><div class="card"><h3>Staff Claim (cafe credentials)</h3><div class="note">Stub login for prototype: user <code>sibol</code> / pass <code>1234</code>. Full auth post-defense.</div><div style="display:flex;gap:6px;margin:8px 0"><input id="su" placeholder="user" style="flex:1;padding:9px;border-radius:8px;border:1px solid #ccc"><input id="sp" type="password" placeholder="pass" style="flex:1;padding:9px;border-radius:8px;border:1px solid #ccc"><button class="btn" id="slogin">Open</button></div><div id="queue"></div></div></section>
+<div id="modal"><div class="sheet" id="sheet"></div></div>
+<script>
+const MENU=[
+["Premium Coffee","Americano",89,99],["Premium Coffee","Cafe Latte",100,110],["Premium Coffee","Spanish Latte",110,120],["Premium Coffee","Salted Caramel Latte",120,130],["Premium Coffee","Cafe Mocha",125,135],["Premium Coffee","Roasted Almond Latte",135,145],["Premium Coffee","Seasalt Cream Latte",130,140],["Premium Coffee","Caramel Macchiato",145,155],["Premium Coffee","French Vanilla",135,145],["Premium Coffee","Caramel Latte",135,145],["Premium Coffee","White Mocha",135,145],["Premium Coffee","Mont Blanc (Signature)",130,130],
+["Matcha Series","Matcha Latte",120],["Matcha Series","Seasalt Matcha",140],["Matcha Series","Biscoff Matcha",155],["Matcha Series","Strawberry Matcha",130],["Matcha Series","Ube Matcha",140],
+["Milk Based","Pinkberry 16oz/22oz",105,125],["Milk Based","Blueberry Milk 16oz/22oz",105,125],["Milk Based","Nutella Oreo Milk",140,160],["Milk Based","Biscoff Latte",155,165],["Milk Based","Ube Latte",140,160],
+["Refreshment","Blueberry Soda",110],["Refreshment","Lychee Soda",110],["Refreshment","Sweet Grapes Soda",110],["Refreshment","Red Iced Tea",90],["Refreshment","Butterfly Pea Tea",115],["Refreshment","Pink Lemonade",95],["Refreshment","Blue Lemonade",99],
+["Birthday Drinks","Matcha Birthday Drink",150],["Birthday Drinks","Ube Birthday Drink",140],
+["Snacks","Combo 1 Chicken Poppers + Fries",115],["Snacks","Combo 2 Nuggets + Fries",120],["Snacks","Combo 3 Hungarian + Fries",130],["Snacks","Flavored Fries",50],["Snacks","Cheesy Bacon Fries",120],["Snacks","Pepper Con Carne Nachos",149],["Snacks","Cheesy Chicken Nachos",149],["Snacks","Hungarian Sandwich + Fries",120],["Snacks","Calamares w/ Dip",120],["Snacks","Big Siomai (4pcs)",60],
+["Pasta","Creamy Hungarian Carbonara",169],["Pasta","Cafe Spaghetti",149],
+["Desserts","Banana Muffin",60],["Desserts","Choco Muffin",70],["Desserts","Red Velvet Cookie",80],["Desserts","Chocolate Chip Cookie",55],["Desserts","S'mores Cookie",60],["Desserts","Biscoff Cookie",60],
+["Chicken Wings","Buffalo Wings + Fries",149],["Chicken Wings","Cheesy Wings + Fries",149],["Chicken Wings","Honeysoy + Fries",149],["Chicken Wings","Garlic Parmesan + Fries",159],["Chicken Wings","Wings + Garlic Rice",135],
+["Rice Meals","Beef Tapa",159],["Rice Meals","Honey Pork Spicy",145],["Rice Meals","Lechon Sisig",155],["Rice Meals","Crispy Chicken Sisig",140],["Rice Meals","Chicken Pastil",125],["Rice Meals","Hungarian Sausage",120],["Rice Meals","Chicken Katsu",130],["Rice Meals","Breaded Porkchop",150],["Rice Meals","Grilled Chicken",145],["Rice Meals","Beef Shawarma Rice",165],["Rice Meals","Siomai Rice",99],["Rice Meals","Shanghai Rice",99]
+];
+const ADDONS=[["Espresso Shot",40],["Sub Oat",50],["Cream on Top",45],["Coffee Jelly",20]];
+let cat="All", cart=[], orders=[];
+const cats=["All",...new Set(MENU.map(m=>m[0]))];
+const nav=document.getElementById('cats');
+function drawCats(){nav.innerHTML="";cats.forEach(c=>{const b=document.createElement('button');b.textContent=c;b.className=c===cat?'on':'';b.onclick=()=>{cat=c;drawCats();drawMenu()};nav.appendChild(b)})}
+function drawMenu(){
+const q=document.getElementById('search').value.toLowerCase();
+const list=document.getElementById('menuList');list.innerHTML="";
+cats.slice(1).filter(c=>cat==="All"||c===cat).forEach(c=>{
+const items=MENU.map((m,i)=>({...m,idx:i})).filter(m=>m[0]===c&&(m[1].toLowerCase().includes(q)));
+if(!items.length)return;
+const d=document.createElement('div');d.className='card';d.innerHTML=`<h3 style="margin:0">${c}</h3>`;
+items.forEach(m=>{const p=m[3]??m[2];const row=document.createElement('div');row.className='item';row.innerHTML=`<div><b>${m[1]}</b><span class="note">${m[0]}</span></div><div style="display:flex;gap:8px;align-items:center"><span class="price">₱${p}</span><button class="btn">Add</button></div>`;row.querySelector('button').onclick=()=>customize(m.idx);d.appendChild(row)});
+list.appendChild(d)})}
+document.getElementById('search').oninput=drawMenu;
+function customize(i){
+const m=MENU[i];const hasHotCold=m[3]!==undefined&&m[3]!==m[2];
+const s=document.getElementById('sheet');
+s.innerHTML=`<h3 style="margin-top:0">${m[1]}</h3><div class="note">${m[0]} — base ₱${m[2]}${hasHotCold?` / ₱${m[3]}`:''}</div>
+${hasHotCold?`<div class="chips" id="hc"><button class="on" data-v="${m[2]}">HOT ₱${m[2]}</button><button data-v="${m[3]}">ICED ₱${m[3]}</button></div>`:''}
+<b>Add-ons</b><div class="chips" id="ao">${ADDONS.map((a,j)=>`<button data-p="${a[1]}">${a[0]} +₱${a[1]}</button>`).join('')}</div>
+<div style="display:flex;gap:8px;align-items:center;margin:10px 0">Qty <button class="btn ghost" id="qm">-</button><b id="qv">1</b><button class="btn ghost" id="qp">+</button><b id="tot" style="margin-left:auto"></b></div>
+<button class="btn" id="addc" style="width:100%">Add to cart</button> <button class="btn ghost" id="cls" style="width:100%;margin-top:6px">Close</button>`;
+document.getElementById('modal').classList.add('open');
+let base=m[2],qty=1;const sel=new Set();
+const upd=()=>{let t=base+[...sel].reduce((a,j)=>a+ADDONS[j][1],0);document.getElementById('tot').textContent='₱'+(t*qty);return t*qty};
+s.querySelectorAll('#hc button').forEach(b=>b.onclick=()=>{s.querySelectorAll('#hc button').forEach(x=>x.classList.remove('on'));b.classList.add('on');base=+b.dataset.v;upd()});
+s.querySelectorAll('#ao button').forEach((b,j)=>b.onclick=()=>{b.classList.toggle('on');sel.has(j)?sel.delete(j):sel.add(j);upd()});
+document.getElementById('qm').onclick=()=>{qty=Math.max(1,qty-1);document.getElementById('qv').textContent=qty;upd()};
+document.getElementById('qp').onclick=()=>{qty++;document.getElementById('qv').textContent=qty;upd()};
+document.getElementById('cls').onclick=()=>document.getElementById('modal').classList.remove('open');
+upd();
+document.getElementById('addc').onclick=()=>{const names=[...sel].map(j=>ADDONS[j][0]).join(', ');cart.push({name:m[1]+(names?' + '+names:''),price:upd()/qty,qty});document.getElementById('modal').classList.remove('open');drawCart();bloom(12);setMood(3,'Added! Great pick ☕')}};
+function drawCart(){
+const w=document.getElementById('cartItems');
+if(!cart.length){w.innerHTML='<span class="note">Empty — tap Add.</span>';document.getElementById('cartTotal').textContent='';return}
+w.innerHTML=cart.map((c,i)=>`<div class="item"><div><b>${c.name}</b><span class="note">₱${c.price} × ${c.qty}</span></div><button class="btn ghost" data-i="${i}">x</button></div>`).join('');
+const t=cart.reduce((a,c)=>a+c.price*c.qty,0);document.getElementById('cartTotal').textContent='Total ₱'+t;
+w.querySelectorAll('button').forEach(b=>b.onclick=()=>{cart.splice(+b.dataset.i,1);drawCart()})}
+function bloom(n){for(let k=0;k<n;k++){const p=document.createElement('div');p.className='petal';p.style.left=(30+Math.random()*60)+'vw';p.style.top='30vh';p.style.background=['#e8a7c3','#9ccb8f','#fff'][k%3];document.body.appendChild(p);setTimeout(()=>p.remove(),1700)}}
+document.getElementById('reserve').onclick=()=>{
+if(!cart.length)return alert('Cart empty');
+const code='SB-'+Math.floor(1000+Math.random()*9000);
+const name=document.getElementById('custName').value||'Walk-in';
+orders.push({code,name,items:JSON.parse(JSON.stringify(cart)),status:'Queued'});cart=[];drawCart();drawTrack();drawQueue();
+document.getElementById('claimCode').textContent=code;document.getElementById('qrWrap').style.display='block';
+const q=document.getElementById('qr');q.innerHTML='';let h=[...code].reduce((a,c)=>a+c.charCodeAt(0),0);
+for(let i=0;i<144;i++){const el=document.createElement('i');if((i*7+h)%3===0)el.className='f';q.appendChild(el)}
+bloom(26);setMood(5,'Reserved! Show this QR at the counter 👋')};
+function drawTrack(){const t=document.getElementById('trackList');if(!orders.length)return;t.innerHTML=orders.map(o=>`<div class="item"><div><b>${o.code} — ${o.name}</b><span class="note">${o.items.map(i=>i.qty+'x '+i.name).join('; ')} — ${o.status}</span></div></div>`).join('')}
+function drawQueue(){const q=document.getElementById('queue');if(!q)return;q.innerHTML=(orders.length?orders.map((o,i)=>`<div class="item"><div><b>${o.code}</b><span class="note">${o.name} — ${o.status}</span></div><button class="btn" data-i="${i}">Claim 🌸</button></div>`).join(''):'<span class="note">Queue empty.</span>');
+q.querySelectorAll('button').forEach(b=>b.onclick=()=>{orders[+b.dataset.i].status='Claimed 🎉';bloom(40);setMood(0,'Claimed! Enjoy your Sibol faves 🌸');drawTrack();drawQueue()})}
+const tabs={tMenu:['menuList','cats','search'],tTrack:['trackView'],tStaff:['staffView']};
+Object.keys(tabs).forEach(id=>document.getElementById(id).onclick=()=>{
+document.querySelectorAll('.tabs button').forEach(b=>b.classList.remove('on'));document.getElementById(id).classList.add('on');
+document.getElementById('menuList').style.display='none';document.querySelector('main').style.display='none';document.getElementById('trackView').style.display='none';document.getElementById('staffView').style.display='none';document.getElementById('cats').style.display='none';document.getElementById('search').style.display='none';
+if(id==='tMenu'){document.querySelector('main').style.display='grid';document.getElementById('menuList').style.display='';document.getElementById('cats').style.display='';document.getElementById('search').style.display=''}
+if(id==='tTrack'){document.getElementById('trackView').style.display=''}
+if(id==='tStaff'){document.getElementById('staffView').style.display=''}});
+document.getElementById('slogin').onclick=()=>{if(document.getElementById('su').value==='sibol'&&document.getElementById('sp').value==='1234'){drawQueue();alert('Staff view open')}else alert('Use sibol / 1234 for prototype')};
+document.getElementById('photoUp').onchange=e=>{const f=e.target.files[0];if(!f)return;const u=URL.createObjectURL(f);const im=document.getElementById('photoPrev');im.src=u;im.style.display='block'};
+// views tabs
+[['vCounter','viewCounter'],['vWall','viewWall'],['v3d','view3d']].forEach(([b,v])=>document.getElementById(b).onclick=()=>{
+['vCounter','vWall','v3d'].forEach(x=>document.getElementById(x).classList.remove('on'));document.getElementById(b).classList.add('on');
+['viewCounter','viewWall','view3d'].forEach(x=>document.getElementById(x).style.display='none');document.getElementById(v).style.display='';
+if(v==='view3d')bootThree()});
+// sprite moods — sprites.png is 3 cols x 4 rows; idx 0..11
+function setMood(i,line){const c=i%3,r=Math.floor(i/3);const w=document.getElementById('spriteWin');if(w)w.style.backgroundPosition=`${c*50}% ${r*33.333}%`;if(line)document.getElementById('moodBubble').textContent=line}
+setMood(0);
+drawCats();drawMenu();drawCart();
+// Three.js primitives room — vendored ./assets/three.module.js, fully offline. No addons (hand-rolled orbit).
+let threeBooted=false;
+window.bootThree=function(){
+if(threeBooted)return;threeBooted=true;
+const msg=document.getElementById('threeMsg');
+const THREE=window.THREE;
+if(!THREE){msg.textContent='3D engine missing (assets/three.min.js). PNG views above still work.';return}
+{
+const cv=document.getElementById('c3d');
+const renderer=new THREE.WebGLRenderer({canvas:cv,antialias:true});
+const scene=new THREE.Scene();scene.background=new THREE.Color(0x0e1f19);
+const cam=new THREE.PerspectiveCamera(50,2,0.1,100);cam.position.set(4.2,3.0,5.2);cam.lookAt(0,0.8,0);
+scene.add(new THREE.AmbientLight(0xfff6e8,0.9));
+const sun=new THREE.DirectionalLight(0xffffff,1.1);sun.position.set(4,7,4);scene.add(sun);
+const room=new THREE.Group();scene.add(room);
+const tex=(f,fb)=>{try{const t=new THREE.TextureLoader().load(f,undefined,undefined,()=>{});return t}catch(e){return null}};
+const floorMat=new THREE.MeshStandardMaterial({color:0xe9e2d2});
+const floor=new THREE.Mesh(new THREE.PlaneGeometry(12,12),floorMat);floor.rotation.x=-Math.PI/2;room.add(floor);
+const backTex=tex('assets/counterview.png');const backMat=new THREE.MeshStandardMaterial({color:0xd8d2c4,map:backTex||null});
+const back=new THREE.Mesh(new THREE.PlaneGeometry(10,4),backMat);back.position.set(0,2,-3);room.add(back);
+const sideTex=tex('assets/freedomwall-view.png');const sideMat=new THREE.MeshStandardMaterial({color:0xcfc8b8,map:sideTex||null});
+const side=new THREE.Mesh(new THREE.PlaneGeometry(10,4),sideMat);side.rotation.y=Math.PI/2.4;side.position.set(-4.4,2,0.5);room.add(side);
+const counterMat=new THREE.MeshStandardMaterial({color:0xf2efe8});
+const counter=new THREE.Mesh(new THREE.BoxGeometry(4.4,1.1,1.2),counterMat);counter.position.set(0,0.55,-1.4);room.add(counter);
+const top=new THREE.Mesh(new THREE.BoxGeometry(4.6,0.08,1.4),new THREE.MeshStandardMaterial({color:0x9aa39c}));top.position.set(0,1.14,-1.4);room.add(top);
+// Sibol cup: body + coffee + handle
+const cupG=new THREE.Group();cupG.position.set(-1.1,1.5,-1.3);room.add(cupG);
+const body=new THREE.Mesh(new THREE.CylinderGeometry(0.32,0.26,0.55,24),new THREE.MeshStandardMaterial({color:0xfbf7ee}));cupG.add(body);
+const cof=new THREE.Mesh(new THREE.CylinderGeometry(0.28,0.28,0.04,24),new THREE.MeshStandardMaterial({color:0x5a3a22}));cof.position.y=0.26;cupG.add(cof);
+const hnd=new THREE.Mesh(new THREE.TorusGeometry(0.2,0.045,12,24),new THREE.MeshStandardMaterial({color:0xfbf7ee}));hnd.position.x=0.34;cupG.add(hnd);
+// bouquet: wrap cone + blooms + stems
+const bq=new THREE.Group();bq.position.set(1.2,1.2,-1.3);room.add(bq);
+const wrap=new THREE.Mesh(new THREE.ConeGeometry(0.42,0.8,20,1,true),new THREE.MeshStandardMaterial({color:0xf5f2f7,side:THREE.DoubleSide}));wrap.rotation.x=Math.PI;bq.add(wrap);
+[[0,0.55,0,0xe8457c],[0.25,0.45,0.1,0xffd9e3],[-0.25,0.45,-0.05,0xfff6ee],[0.1,0.7,-0.1,0xc9244f],[-0.12,0.68,0.12,0xf7b6c8]].forEach(p=>{
+const s=new THREE.Mesh(new THREE.SphereGeometry(0.16,14,14),new THREE.MeshStandardMaterial({color:p[3]}));s.position.set(p[0],p[1],p[2]);bq.add(s)});
+// chibi billboard
+const ct=tex('assets/loreen-chibi.png');
+const chip=new THREE.Mesh(new THREE.PlaneGeometry(1.1,1.4),new THREE.MeshBasicMaterial({map:ct||null,color:ct?0xffffff:0xe8a7c3,transparent:true,side:THREE.DoubleSide}));
+chip.position.set(2.6,1.0,0.6);room.add(chip);
+let ry=0.5,drag=false,px=0;
+cv.addEventListener('pointerdown',e=>{drag=true;px=e.clientX});
+addEventListener('pointerup',()=>drag=false);
+cv.addEventListener('pointermove',e=>{if(drag){ry+=(e.clientX-px)*0.01;px=e.clientX}});
+function fit(){const w=cv.clientWidth||600,h=Math.round(w*0.47);if(cv.width!==w*2){cv.width=w*2;cv.height=h*2}renderer.setSize(w,h,false);cam.aspect=w/h;cam.updateProjectionMatrix()}
+addEventListener('resize',fit);fit();
+(function loop(){ry+=drag?0:0.004;room.rotation.y=ry;chip.rotation.y=-ry;renderer.render(scene,cam);requestAnimationFrame(loop)})();
+msg.textContent='3D live — drag to orbit. Primitives + your real counter/freedom-wall photos as walls.';
+}
+};
+</script>
+</body>
+</html>

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sibol Garden — Enter and watch it grow</title>
+<link rel="stylesheet" href="garden.css">
+</head>
+<body>
+<canvas id="dots"></canvas>
+<div class="wrap">
+ <section class="hero">
+  <div class="kicker">SIBOL CAFE • BITES &amp; BLOOMS • NU BALIWAG</div>
+  <h1>Enter the Cafe<br>and watch it <em>grow.</em></h1>
+  <p class="tag">A living menu inside a living garden. Dishes, drinks and bouquets,
+  served where growth begins — rendered in dots while the full garden blooms.
+  A deliberate work-in-progress.</p>
+  <div class="coords">14°57′N 120°54′E — BALIWAG, BULACAN</div>
+  <div><button class="btn" id="enterBtn">Enter the Garden ↓</button>
+  <a class="ghost" href="prototype-cafe.html" style="text-decoration:none">Skip to ordering demo →</a></div>
+  <div class="meter"><div class="bar"><div id="totalBar"></div></div>
+  <small>You have discovered <b id="totalPct">0%</b> of the cafe</small></div>
+ </section>
+ <section id="chapters"></section>
+ <div class="foot">Dot-field is the WIP art direction: scenes resolve from dots into
+ photography as assets arrive (Counter + Freedom wall live; Outdoor, Interior,
+ Bites &amp; Blooms planting). Reference inspiration:
+ <a href="https://pendereckisgarden.pl/en/">pendereckisgarden.pl</a> — chapters, discovery, ambience.
+ Live ordering lives in <a href="prototype-cafe.html">prototype-cafe.html</a>.</div>
+</div>
+<div id="panel"></div>
+<script src="dots-data.js"></script>
+<script src="garden.js"></script>
+</body>
+</html>
