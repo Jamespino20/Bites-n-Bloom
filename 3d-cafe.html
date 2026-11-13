@@ -540,6 +540,26 @@
     let cartCount = 0;
     const wallNotes = ["Let coffee connect us.", "Grow at your own pace."];
 
+    // Freedom Wall notes pinned live in 3D (capped at 12 visible)
+    const wallNoteMeshes = [];
+    const wallNoteColors = ["#e8cf75", "#e79daf", "#b9d59c", "#b8d8df"];
+    function layoutWallNotes() {
+      wallNoteMeshes.forEach(m => interior.remove(m));
+      wallNoteMeshes.length = 0;
+      wallNotes.slice(0, 12).forEach((text, i) => {
+        const note = new THREE.Mesh(
+          new THREE.PlaneGeometry(0.5, 0.5),
+          new THREE.MeshBasicMaterial({ color: wallNoteColors[i % 4] })
+        );
+        const c = i % 3, r = Math.floor(i / 3);
+        note.position.set(5.60, 2.9 - r * 0.68, -2.9 + c * 0.72);
+        note.rotation.y = -Math.PI / 2;
+        note.rotation.z = (i % 2 ? -1 : 1) * 0.05;
+        interior.add(note);
+        wallNoteMeshes.push(note);
+      });
+    }
+
     function setView(view) {
       if (!views[view]) return;
       currentView = view;
@@ -547,6 +567,7 @@
       targetLookAt.copy(views[view].target);
       outside.visible = view === "outside";
       interior.visible = view !== "outside";
+      if (view === "wall") layoutWallNotes();
       renderUI();
     }
 
@@ -647,6 +668,7 @@
           const value = new FormData(event.currentTarget).get("note")?.toString().trim();
           if (!value) return;
           wallNotes.unshift(value);
+          layoutWallNotes();
           renderUI();
         });
       }

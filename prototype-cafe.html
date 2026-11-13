@@ -54,7 +54,7 @@ code{background:#efe9d9;padding:2px 6px;border-radius:6px}
 <small>Where Growth Begins — Bites & Blooms prototype (static, offline-ready)</small></div>
 </header>
 <div class="tabs" style="margin-top:10px">
-<button class="on" id="tMenu">Menu</button><button id="tTrack">Track / Claim</button><button id="tStaff">Staff Claim</button>
+<button class="on" id="tMenu">Menu</button><button id="tTrack">Track / Claim</button><button id="tStaff">Staff Claim</button><button id="tWall">Freedom Wall</button>
 </div>
 <nav id="cats"></nav>
 <input id="search" placeholder="Search menu — try matcha, wings, carbonara…">
@@ -84,6 +84,7 @@ code{background:#efe9d9;padding:2px 6px;border-radius:6px}
 </main>
 <section id="trackView" style="display:none;max-width:960px;margin:0 auto;padding:12px"><div class="card"><h3>Order tracking</h3><div id="trackList"><span class="note">No orders yet.</span></div></div></section>
 <section id="staffView" style="display:none;max-width:960px;margin:0 auto;padding:12px"><div class="card"><h3>Staff Claim (cafe credentials)</h3><div class="note">Stub login for prototype: user <code>sibol</code> / pass <code>1234</code>. Full auth post-defense.</div><div style="display:flex;gap:6px;margin:8px 0"><input id="su" placeholder="user" style="flex:1;padding:9px;border-radius:8px;border:1px solid #ccc"><input id="sp" type="password" placeholder="pass" style="flex:1;padding:9px;border-radius:8px;border:1px solid #ccc"><button class="btn" id="slogin">Open</button></div><div id="queue"></div></div></section>
+<section id="wallView" style="display:none;max-width:960px;margin:0 auto;padding:12px"><div class="card"><h3>Freedom Wall — let coffee connect us</h3><div class="note">Anonymous notes. Staff moderates post-defense; prototype publishes instantly.</div><div id="wallNotes" style="display:grid;gap:8px;margin:10px 0"></div><div style="display:flex;gap:6px"><input id="wallInput" maxlength="140" placeholder="Leave a kind thought…" style="flex:1;padding:10px;border-radius:10px;border:1px solid #ccc"><button class="btn" id="wallPin">Pin 📌</button></div></div></section>
 <div id="modal"><div class="sheet" id="sheet"></div></div>
 <script>
 const MENU=[
@@ -153,10 +154,14 @@ q.querySelectorAll('button').forEach(b=>b.onclick=()=>{orders[+b.dataset.i].stat
 const tabs={tMenu:['menuList','cats','search'],tTrack:['trackView'],tStaff:['staffView']};
 Object.keys(tabs).forEach(id=>document.getElementById(id).onclick=()=>{
 document.querySelectorAll('.tabs button').forEach(b=>b.classList.remove('on'));document.getElementById(id).classList.add('on');
-document.getElementById('menuList').style.display='none';document.querySelector('main').style.display='none';document.getElementById('trackView').style.display='none';document.getElementById('staffView').style.display='none';document.getElementById('cats').style.display='none';document.getElementById('search').style.display='none';
+document.getElementById('menuList').style.display='none';document.querySelector('main').style.display='none';document.getElementById('trackView').style.display='none';document.getElementById('staffView').style.display='none';document.getElementById('wallView').style.display='none';document.getElementById('cats').style.display='none';document.getElementById('search').style.display='none';
 if(id==='tMenu'){document.querySelector('main').style.display='grid';document.getElementById('menuList').style.display='';document.getElementById('cats').style.display='';document.getElementById('search').style.display=''}
 if(id==='tTrack'){document.getElementById('trackView').style.display=''}
-if(id==='tStaff'){document.getElementById('staffView').style.display=''}});
+if(id==='tStaff'){document.getElementById('staffView').style.display=''}
+if(id==='tWall'){document.getElementById('wallView').style.display='';drawWall()}});
+let wallNotes=['Let coffee connect us.','Grow at your own pace.'];
+function drawWall(){const w=document.getElementById('wallNotes');const cols=['#f6e8a0','#f3c6d4','#d9e8c8','#d4e6f0'];w.innerHTML=wallNotes.map((n,i)=>`<div style="background:${cols[i%4]};border-radius:4px 12px 12px 12px;padding:10px 12px;box-shadow:0 2px 6px rgba(0,0,0,.12)">📌 ${n}</div>`).join('')||'<span class="note">Wall is empty — pin the first note.</span>'}
+document.getElementById('wallPin').onclick=()=>{const v=document.getElementById('wallInput').value.trim();if(!v)return;wallNotes.unshift(v);document.getElementById('wallInput').value='';drawWall();bloom(8);setMood(0,'Pinned to the wall! 🌱')};
 document.getElementById('slogin').onclick=()=>{if(document.getElementById('su').value==='sibol'&&document.getElementById('sp').value==='1234'){drawQueue();alert('Staff view open')}else alert('Use sibol / 1234 for prototype')};
 document.getElementById('photoUp').onchange=e=>{const f=e.target.files[0];if(!f)return;const u=URL.createObjectURL(f);const im=document.getElementById('photoPrev');im.src=u;im.style.display='block'};
 // views tabs
