@@ -1,620 +1,730 @@
 <!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Sibol Cafe — Bites & Blooms</title>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sibol Cafe — Bites & Blooms</title>
 
-  <script type="importmap">
-    {
-      "imports": {
-        "three": "https://cdn.jsdelivr.net/npm/three@0.164.1/build/three.module.js",
-        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.164.1/examples/jsm/"
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://cdn.jsdelivr.net/npm/three@0.164.1/build/three.module.js",
+          "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.164.1/examples/jsm/"
+        }
       }
-    }
-  </script>
+    </script>
 
-  <style>
-    :root {
-      color-scheme: light;
-      --green: #2d4a3e;
-      --cream: #f7f2e9;
-      --ink: #26352e;
-    }
-
-    * { box-sizing: border-box; }
-
-    body {
-      margin: 0;
-      overflow: hidden;
-      background: #d9e8de;
-      color: var(--ink);
-      font-family: system-ui, sans-serif;
-    }
-
-    canvas {
-      display: block;
-      position: fixed;
-      inset: 0;
-    }
-
-    .brand {
-      position: fixed;
-      top: 20px;
-      left: 22px;
-      z-index: 2;
-      color: var(--green);
-      text-shadow: 0 1px 8px #fff9;
-      pointer-events: none;
-    }
-
-    .brand strong {
-      display: block;
-      font: 700 24px Georgia, serif;
-    }
-
-    .brand span {
-      font-size: 12px;
-      letter-spacing: .12em;
-      text-transform: uppercase;
-    }
-
-    .panel {
-      position: fixed;
-      z-index: 2;
-      left: 22px;
-      bottom: 22px;
-      width: min(390px, calc(100vw - 44px));
-      padding: 20px;
-      border: 1px solid #ffffffa8;
-      border-radius: 18px;
-      background: #f7f2e9ed;
-      box-shadow: 0 12px 40px #1d30252e;
-      backdrop-filter: blur(10px);
-    }
-
-    .panel h1, .panel h2 {
-      margin: 0 0 8px;
-      color: var(--green);
-      font-family: Georgia, serif;
-    }
-
-    .panel p {
-      margin: 0 0 14px;
-      line-height: 1.5;
-    }
-
-    .row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-top: 12px;
-    }
-
-    button {
-      min-height: 42px;
-      padding: 10px 14px;
-      border: 0;
-      border-radius: 999px;
-      background: var(--green);
-      color: white;
-      cursor: pointer;
-      font: inherit;
-      font-weight: 600;
-    }
-
-    button.secondary {
-      background: #e4e9e1;
-      color: var(--green);
-    }
-
-    button:hover { filter: brightness(1.08); }
-
-    .top-nav {
-      position: fixed;
-      z-index: 2;
-      top: 20px;
-      right: 20px;
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: flex-end;
-      gap: 8px;
-    }
-
-    .top-nav button {
-      min-height: 38px;
-      padding: 8px 12px;
-      border: 1px solid #ffffff99;
-      background: #f7f2e9e8;
-      color: var(--green);
-      box-shadow: 0 4px 16px #1d30251a;
-    }
-
-    .product {
-      display: flex;
-      justify-content: space-between;
-      gap: 12px;
-      padding: 10px 0;
-      border-bottom: 1px solid #2d4a3e22;
-    }
-
-    .product small {
-      display: block;
-      opacity: .7;
-    }
-
-    .product button {
-      min-height: 34px;
-      padding: 6px 11px;
-    }
-
-    input, textarea {
-      width: 100%;
-      padding: 11px 12px;
-      border: 1px solid #2d4a3e44;
-      border-radius: 10px;
-      background: white;
-      color: var(--ink);
-      font: inherit;
-    }
-
-    textarea {
-      min-height: 78px;
-      resize: vertical;
-    }
-
-    .note {
-      margin-top: 8px;
-      padding: 9px 11px;
-      border-radius: 8px;
-      background: #eadb91;
-      font-family: Georgia, serif;
-      overflow-wrap: anywhere;
-    }
-
-    .cart-count {
-      font-variant-numeric: tabular-nums;
-    }
-
-    .hint {
-      position: fixed;
-      right: 20px;
-      bottom: 20px;
-      z-index: 2;
-      padding: 9px 12px;
-      border-radius: 999px;
-      background: #26352ebd;
-      color: white;
-      font-size: 12px;
-      pointer-events: none;
-    }
-
-    @media (max-width: 640px) {
-      .brand { top: 14px; left: 14px; }
-      .brand strong { font-size: 20px; }
-      .top-nav { top: 60px; right: 12px; left: 12px; }
-      .top-nav button { min-height: 36px; font-size: 12px; }
-      .panel { left: 12px; bottom: 12px; width: calc(100vw - 24px); padding: 16px; }
-      .hint { display: none; }
-    }
-  </style>
-</head>
-
-<body>
-  <div class="brand">
-    <strong>Sibol Cafe</strong>
-    <span>Bites &amp; Blooms · Let coffee connect us.</span>
-  </div>
-
-  <nav class="top-nav" id="nav" aria-label="Cafe locations"></nav>
-  <section class="panel" id="panel" aria-live="polite"></section>
-  <div class="hint">Click a glowing marker to explore</div>
-
-  <script type="module">
-    import * as THREE from "three";
-
-    const scene = new THREE.Scene();
-    scene.background = new THREE.Color("#d9e8de");
-    scene.fog = new THREE.Fog("#d9e8de", 24, 58);
-
-    const camera = new THREE.PerspectiveCamera(
-      48, window.innerWidth / window.innerHeight, 0.1, 100
-    );
-
-    const renderer = new THREE.WebGLRenderer({
-      antialias: true,
-      powerPreference: "high-performance"
-    });
-
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.75));
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.shadowMap.enabled = true;
-    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-    renderer.outputColorSpace = THREE.SRGBColorSpace;
-    renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1;
-    document.body.prepend(renderer.domElement);
-
-    scene.add(new THREE.HemisphereLight(0xfff7e6, 0x728c79, 2.1));
-
-    const sun = new THREE.DirectionalLight(0xffefd0, 3.2);
-    sun.position.set(-5, 9, 7);
-    sun.castShadow = true;
-    sun.shadow.mapSize.set(1024, 1024);
-    sun.shadow.camera.left = -13;
-    sun.shadow.camera.right = 13;
-    sun.shadow.camera.top = 13;
-    sun.shadow.camera.bottom = -13;
-    scene.add(sun);
-
-    const outside = new THREE.Group();
-    const interior = new THREE.Group();
-    scene.add(outside, interior);
-
-    const material = (color, roughness = 0.85) =>
-      new THREE.MeshStandardMaterial({ color, roughness });
-
-    const mats = {
-      green: material("#2d4a3e"),
-      deepGreen: material("#20382f"),
-      cream: material("#f7f2e9"),
-      wall: material("#eee5d5"),
-      wood: material("#a87950"),
-      darkWood: material("#674a37"),
-      tile: material("#c7a982"),
-      terracotta: material("#bb7358"),
-      leaf: material("#66835d"),
-      pink: material("#d9879c"),
-      yellow: material("#e4c56e"),
-      skyBlue: material("#b7d9d6"),
-      white: material("#fff9ec")
-    };
-
-    function box(parent, size, position, mat, castShadow = true) {
-      const mesh = new THREE.Mesh(
-        new THREE.BoxGeometry(...size),
-        mat
-      );
-      mesh.position.set(...position);
-      mesh.castShadow = castShadow;
-      mesh.receiveShadow = true;
-      parent.add(mesh);
-      return mesh;
-    }
-
-    function cylinder(parent, radiusTop, radiusBottom, height, position, mat, segments = 12) {
-      const mesh = new THREE.Mesh(
-        new THREE.CylinderGeometry(radiusTop, radiusBottom, height, segments),
-        mat
-      );
-      mesh.position.set(...position);
-      mesh.castShadow = true;
-      mesh.receiveShadow = true;
-      parent.add(mesh);
-      return mesh;
-    }
-
-    function makeSign(parent, text, position, width = 3.4) {
-      const canvas = document.createElement("canvas");
-      canvas.width = 768;
-      canvas.height = 192;
-      const ctx = canvas.getContext("2d");
-
-      ctx.fillStyle = "#2d4a3e";
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-      ctx.fillStyle = "#f7f2e9";
-      ctx.font = "bold 76px Georgia";
-      ctx.textAlign = "center";
-      ctx.textBaseline = "middle";
-      ctx.fillText(text, canvas.width / 2, canvas.height / 2);
-
-      const texture = new THREE.CanvasTexture(canvas);
-      texture.colorSpace = THREE.SRGBColorSpace;
-
-      const sign = new THREE.Mesh(
-        new THREE.PlaneGeometry(width, width * 0.25),
-        new THREE.MeshBasicMaterial({ map: texture })
-      );
-      sign.position.set(...position);
-      parent.add(sign);
-      return sign;
-    }
-
-    function makePlant(parent, x, z, scale = 1) {
-      const group = new THREE.Group();
-      group.position.set(x, 0, z);
-      group.scale.setScalar(scale);
-      parent.add(group);
-
-      cylinder(group, 0.22, 0.3, 0.45, [0, 0.22, 0], mats.terracotta);
-      cylinder(group, 0.23, 0.23, 0.08, [0, 0.45, 0], mats.darkWood);
-
-      for (let i = 0; i < 7; i++) {
-        const leaf = new THREE.Mesh(
-          new THREE.ConeGeometry(0.13, 0.85, 7),
-          mats.leaf
-        );
-        const angle = (i / 7) * Math.PI * 2;
-        leaf.position.set(Math.cos(angle) * 0.18, 0.9, Math.sin(angle) * 0.18);
-        leaf.rotation.z = Math.cos(angle) * 0.35;
-        leaf.rotation.x = Math.sin(angle) * 0.35;
-        leaf.castShadow = true;
-        group.add(leaf);
+    <style>
+      :root {
+        color-scheme: light;
+        --green: #2d4a3e;
+        --cream: #f7f2e9;
+        --ink: #26352e;
       }
-    }
 
-    function makeFlowerPot(parent, x, z, scale = 1) {
-      const group = new THREE.Group();
-      group.position.set(x, 0, z);
-      group.scale.setScalar(scale);
-      parent.add(group);
-
-      cylinder(group, 0.2, 0.28, 0.35, [0, 0.18, 0], mats.terracotta);
-      for (let i = 0; i < 5; i++) {
-        const stem = new THREE.Mesh(
-          new THREE.CylinderGeometry(0.018, 0.018, 0.48, 5),
-          mats.leaf
-        );
-        const a = (i / 5) * Math.PI * 2;
-        stem.position.set(Math.cos(a) * 0.12, 0.55, Math.sin(a) * 0.12);
-        group.add(stem);
-
-        const bloom = new THREE.Mesh(
-          new THREE.SphereGeometry(0.12, 8, 6),
-          i % 2 ? mats.pink : mats.yellow
-        );
-        bloom.position.set(Math.cos(a) * 0.12, 0.82, Math.sin(a) * 0.12);
-        group.add(bloom);
+      * {
+        box-sizing: border-box;
       }
-    }
 
-    // Outdoor entrance
-    box(outside, [34, 0.25, 34], [0, -0.28, 0], material("#a9bca6"), false);
-    box(outside, [13, 0.25, 7], [0, -0.1, 5.4], mats.tile, false);
+      body {
+        margin: 0;
+        overflow: hidden;
+        background: #d9e8de;
+        color: var(--ink);
+        font-family: system-ui, sans-serif;
+      }
 
-    // Facade with a central doorway opening
-    box(outside, [4.5, 4.6, 0.35], [-3.75, 2.2, 5.8], mats.cream);
-    box(outside, [4.5, 4.6, 0.35], [3.75, 2.2, 5.8], mats.cream);
-    box(outside, [4, 1.2, 0.35], [0, 4.9, 5.8], mats.cream);
+      canvas {
+        display: block;
+        position: fixed;
+        inset: 0;
+      }
 
-    box(outside, [13.2, 0.35, 1.3], [0, 4.5, 5.1], mats.green);
-    box(outside, [2.2, 3.3, 0.15], [0, 1.65, 5.95], mats.darkWood);
-    box(outside, [1.6, 2.75, 0.08], [0, 1.65, 5.83], mats.wood);
-    makeSign(outside, "SIBOL CAFE", [0, 3.75, 5.55], 4.2);
+      .brand {
+        position: fixed;
+        top: 20px;
+        left: 22px;
+        z-index: 2;
+        color: var(--green);
+        text-shadow: 0 1px 8px #fff9;
+        pointer-events: none;
+      }
 
-    // Front windows
-    for (const x of [-4.05, 4.05]) {
-      const windowMesh = box(outside, [2.5, 1.9, 0.08], [x, 2.25, 5.57], mats.skyBlue, false);
-      windowMesh.material = new THREE.MeshStandardMaterial({
-        color: "#a9cfca",
-        roughness: 0.3,
-        metalness: 0.05
+      .brand strong {
+        display: block;
+        font:
+          700 24px Georgia,
+          serif;
+      }
+
+      .brand span {
+        font-size: 12px;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+      }
+
+      .panel {
+        position: fixed;
+        z-index: 2;
+        left: 22px;
+        bottom: 22px;
+        width: min(390px, calc(100vw - 44px));
+        padding: 20px;
+        border: 1px solid #ffffffa8;
+        border-radius: 18px;
+        background: #f7f2e9ed;
+        box-shadow: 0 12px 40px #1d30252e;
+        backdrop-filter: blur(10px);
+      }
+
+      .panel h1,
+      .panel h2 {
+        margin: 0 0 8px;
+        color: var(--green);
+        font-family: Georgia, serif;
+      }
+
+      .panel p {
+        margin: 0 0 14px;
+        line-height: 1.5;
+      }
+
+      .row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 12px;
+      }
+
+      button {
+        min-height: 42px;
+        padding: 10px 14px;
+        border: 0;
+        border-radius: 999px;
+        background: var(--green);
+        color: white;
+        cursor: pointer;
+        font: inherit;
+        font-weight: 600;
+      }
+
+      button.secondary {
+        background: #e4e9e1;
+        color: var(--green);
+      }
+
+      button:hover {
+        filter: brightness(1.08);
+      }
+
+      .top-nav {
+        position: fixed;
+        z-index: 2;
+        top: 20px;
+        right: 20px;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+        gap: 8px;
+      }
+
+      .top-nav button {
+        min-height: 38px;
+        padding: 8px 12px;
+        border: 1px solid #ffffff99;
+        background: #f7f2e9e8;
+        color: var(--green);
+        box-shadow: 0 4px 16px #1d30251a;
+      }
+
+      .product {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 10px 0;
+        border-bottom: 1px solid #2d4a3e22;
+      }
+
+      .product small {
+        display: block;
+        opacity: 0.7;
+      }
+
+      .product button {
+        min-height: 34px;
+        padding: 6px 11px;
+      }
+
+      input,
+      textarea {
+        width: 100%;
+        padding: 11px 12px;
+        border: 1px solid #2d4a3e44;
+        border-radius: 10px;
+        background: white;
+        color: var(--ink);
+        font: inherit;
+      }
+
+      textarea {
+        min-height: 78px;
+        resize: vertical;
+      }
+
+      .note {
+        margin-top: 8px;
+        padding: 9px 11px;
+        border-radius: 8px;
+        background: #eadb91;
+        font-family: Georgia, serif;
+        overflow-wrap: anywhere;
+      }
+
+      .cart-count {
+        font-variant-numeric: tabular-nums;
+      }
+
+      .hint {
+        position: fixed;
+        right: 20px;
+        bottom: 20px;
+        z-index: 2;
+        padding: 9px 12px;
+        border-radius: 999px;
+        background: #26352ebd;
+        color: white;
+        font-size: 12px;
+        pointer-events: none;
+      }
+
+      @media (max-width: 640px) {
+        .brand {
+          top: 14px;
+          left: 14px;
+        }
+        .brand strong {
+          font-size: 20px;
+        }
+        .top-nav {
+          top: 60px;
+          right: 12px;
+          left: 12px;
+        }
+        .top-nav button {
+          min-height: 36px;
+          font-size: 12px;
+        }
+        .panel {
+          left: 12px;
+          bottom: 12px;
+          width: calc(100vw - 24px);
+          padding: 16px;
+        }
+        .hint {
+          display: none;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="brand">
+      <strong>Sibol Cafe</strong>
+      <span>Bites &amp; Blooms · Let coffee connect us.</span>
+    </div>
+
+    <nav class="top-nav" id="nav" aria-label="Cafe locations"></nav>
+    <section class="panel" id="panel" aria-live="polite"></section>
+    <div class="hint">Click a glowing marker to explore</div>
+
+    <script type="module">
+      import * as THREE from "three";
+
+      const scene = new THREE.Scene();
+      scene.background = new THREE.Color("#d9e8de");
+      scene.fog = new THREE.Fog("#d9e8de", 24, 58);
+
+      const camera = new THREE.PerspectiveCamera(
+        48,
+        window.innerWidth / window.innerHeight,
+        0.1,
+        100,
+      );
+
+      const renderer = new THREE.WebGLRenderer({
+        antialias: true,
+        powerPreference: "high-performance",
       });
-    }
 
-    makePlant(outside, -6, 6.5, 1.5);
-    makePlant(outside, 6, 6.3, 1.35);
-    makeFlowerPot(outside, -5.1, 3.5, 1.1);
-    makeFlowerPot(outside, 5.1, 3.5, 1.1);
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.75));
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.shadowMap.enabled = true;
+      renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+      renderer.outputColorSpace = THREE.SRGBColorSpace;
+      renderer.toneMapping = THREE.ACESFilmicToneMapping;
+      renderer.toneMappingExposure = 1;
+      document.body.prepend(renderer.domElement);
 
-    // Cafe interior
-    box(interior, [12, 0.25, 14], [0, -0.13, -1], mats.tile, false);
-    box(interior, [12, 5, 0.25], [0, 2.4, -8], mats.wall);
-    box(interior, [0.25, 5, 14], [-6, 2.4, -1], mats.wall);
-    box(interior, [0.25, 5, 14], [6, 2.4, -1], mats.wall);
+      scene.add(new THREE.HemisphereLight(0xfff7e6, 0x728c79, 2.1));
 
-    // Back counter
-    box(interior, [5.3, 0.35, 1.35], [0, 1.15, -5.2], mats.wood);
-    box(interior, [5.0, 0.95, 1.15], [0, 0.55, -5.2], mats.green);
-    box(interior, [5.35, 0.12, 1.4], [0, 1.38, -5.2], mats.darkWood);
+      const sun = new THREE.DirectionalLight(0xffefd0, 3.2);
+      sun.position.set(-5, 9, 7);
+      sun.castShadow = true;
+      sun.shadow.mapSize.set(1024, 1024);
+      sun.shadow.camera.left = -13;
+      sun.shadow.camera.right = 13;
+      sun.shadow.camera.top = 13;
+      sun.shadow.camera.bottom = -13;
+      scene.add(sun);
 
-    // Cup display and small counter props
-    for (let i = 0; i < 3; i++) {
-      cylinder(interior, 0.17, 0.13, 0.38, [-1.1 + i * 0.48, 1.65, -5.05], mats.cream, 12);
-      cylinder(interior, 0.18, 0.18, 0.045, [-1.1 + i * 0.48, 1.86, -5.05], mats.green, 12);
-    }
-    box(interior, [0.75, 0.45, 0.55], [1.55, 1.66, -5.15], mats.deepGreen);
+      const outside = new THREE.Group();
+      const interior = new THREE.Group();
+      scene.add(outside, interior);
 
-    // Stylized cashier + chibi Loreen greeter (real cashier art)
-    cylinder(interior, 0.35, 0.42, 0.8, [0, 1.9, -6.1], mats.terracotta, 12);
-    const head = new THREE.Mesh(
-      new THREE.SphereGeometry(0.34, 16, 12),
-      mats.cream
-    );
-    head.position.set(0, 2.55, -6.1);
-    head.castShadow = true;
-    interior.add(head);
-    // Chibi Loreen billboard beside the counter — real cashier art, always faces camera
-    const chibiTex = new THREE.TextureLoader().load("assets/loreen-chibi.png");
-    const chibi = new THREE.Sprite(new THREE.SpriteMaterial({ map: chibiTex, transparent: true }));
-    chibi.scale.set(1.0, 1.35, 1);
-    chibi.position.set(1.35, 2.1, -5.7);
-    interior.add(chibi);
-    // Hunyuan Loreen upgrade: real generated model replaces the PNG sprite
-    // once fetched (sprite stays as the offline/instant fallback).
-    // If she faces away on demo day, flip the Math.PI line below.
-    import("three/addons/loaders/GLTFLoader.js").then(({ GLTFLoader }) => {
-      new GLTFLoader().load("assets/models/chibi-hunyuan-web.glb", glb => {
-        const loreen = glb.scene;
-        loreen.scale.setScalar(1.15);
-        loreen.position.set(2.6, 0, -6.5);
-        // loreen.rotation.y = Math.PI;
-        loreen.traverse(o => { if (o.isMesh) { o.castShadow = true; } });
-        interior.add(loreen);
-        interior.remove(chibi);
-      }, undefined, () => {});
-    }).catch(() => {});
-    cylinder(interior, 0.025, 0.025, 0.35, [0, 2.9, -6.1], mats.darkWood, 8);
+      const material = (color, roughness = 0.85) =>
+        new THREE.MeshStandardMaterial({ color, roughness });
 
-    // Tables, stools, and flower arrangements
-    for (const x of [-3.6, 3.4]) {
-      const tableTop = cylinder(interior, 0.85, 0.85, 0.16, [x, 1.0, 1.0], mats.wood, 20);
-      cylinder(interior, 0.1, 0.16, 0.95, [x, 0.48, 1.0], mats.darkWood, 10);
-      makeFlowerPot(interior, x, 1.0, 0.55);
+      const mats = {
+        green: material("#2d4a3e"),
+        deepGreen: material("#20382f"),
+        cream: material("#f7f2e9"),
+        wall: material("#eee5d5"),
+        wood: material("#a87950"),
+        darkWood: material("#674a37"),
+        tile: material("#c7a982"),
+        terracotta: material("#bb7358"),
+        leaf: material("#66835d"),
+        pink: material("#d9879c"),
+        yellow: material("#e4c56e"),
+        skyBlue: material("#b7d9d6"),
+        white: material("#fff9ec"),
+      };
 
-      for (const offset of [-1.05, 1.05]) {
-        cylinder(interior, 0.32, 0.32, 0.18, [x + offset, 0.65, 1.0], mats.green, 12);
-        cylinder(interior, 0.08, 0.1, 0.62, [x + offset, 0.32, 1.0], mats.darkWood, 8);
+      function box(parent, size, position, mat, castShadow = true) {
+        const mesh = new THREE.Mesh(new THREE.BoxGeometry(...size), mat);
+        mesh.position.set(...position);
+        mesh.castShadow = castShadow;
+        mesh.receiveShadow = true;
+        parent.add(mesh);
+        return mesh;
       }
-    }
 
-    makePlant(interior, -5.1, -1.5, 1.3);
-    makePlant(interior, 5.1, -1.5, 1.2);
-    makeFlowerPot(interior, -4.5, -4.2, 0.8);
-    makeFlowerPot(interior, 4.4, -4.1, 0.8);
-
-    // Freedom Wall on the right wall
-    const wallBoard = box(interior, [0.18, 3.0, 4.2], [5.78, 2.25, -1.7], mats.darkWood);
-    wallBoard.rotation.y = Math.PI / 2;
-
-    const wallPanel = new THREE.Mesh(
-      new THREE.PlaneGeometry(3.8, 2.55),
-      mats.cream
-    );
-    wallPanel.position.set(5.66, 2.25, -1.7);
-    wallPanel.rotation.y = -Math.PI / 2;
-    interior.add(wallPanel);
-
-    // A few decorative sticky notes on the wall
-    const noteColors = ["#e8cf75", "#e79daf", "#b9d59c", "#b8d8df"];
-    for (let i = 0; i < 4; i++) {
-      const note = new THREE.Mesh(
-        new THREE.PlaneGeometry(0.65, 0.65),
-        new THREE.MeshBasicMaterial({ color: noteColors[i] })
-      );
-      note.position.set(5.62, 2.7 - (i % 2) * 0.85, -2.7 + Math.floor(i / 2) * 1.5);
-      note.rotation.y = -Math.PI / 2;
-      interior.add(note);
-    }
-
-    // Interactive 3D markers
-    const hotspotMeshes = [];
-    const hotspotMaterial = new THREE.MeshStandardMaterial({
-      color: "#f1cf6d",
-      emissive: "#d89d36",
-      emissiveIntensity: 1.2,
-      roughness: 0.35
-    });
-
-    function addHotspot(label, position, view) {
-      const marker = new THREE.Mesh(
-        new THREE.SphereGeometry(0.22, 16, 12),
-        hotspotMaterial
-      );
-      marker.position.set(...position);
-      marker.userData = { label, view, baseY: position[1] };
-      marker.castShadow = true;
-      interior.add(marker);
-
-      const ring = new THREE.Mesh(
-        new THREE.TorusGeometry(0.34, 0.025, 8, 24),
-        new THREE.MeshBasicMaterial({ color: "#fff1bb" })
-      );
-      ring.position.copy(marker.position);
-      ring.rotation.x = Math.PI / 2;
-      interior.add(ring);
-
-      hotspotMeshes.push(marker);
-    }
-
-    addHotspot("Counter", [0, 2.35, -3.6], "counter");
-    addHotspot("Bites & Blooms", [-2.5, 2.05, -3.6], "menu");
-    addHotspot("Freedom Wall", [4.9, 2.2, -1.7], "wall");
-
-    // Guided camera views
-    const views = {
-      outside: {
-        position: new THREE.Vector3(0, 3.7, 14.5),
-        target: new THREE.Vector3(0, 2.0, 5.3)
-      },
-      interior: {
-        position: new THREE.Vector3(0, 5.0, 12),
-        target: new THREE.Vector3(0, 1.5, -2.0)
-      },
-      counter: {
-        position: new THREE.Vector3(0, 2.9, 0.2),
-        target: new THREE.Vector3(0, 1.6, -5.1)
-      },
-      menu: {
-        position: new THREE.Vector3(-2.2, 2.8, 0.3),
-        target: new THREE.Vector3(-2.2, 1.2, -5.0)
-      },
-      wall: {
-        position: new THREE.Vector3(3.0, 2.7, 0.7),
-        target: new THREE.Vector3(5.55, 2.0, -1.7)
+      function cylinder(
+        parent,
+        radiusTop,
+        radiusBottom,
+        height,
+        position,
+        mat,
+        segments = 12,
+      ) {
+        const mesh = new THREE.Mesh(
+          new THREE.CylinderGeometry(radiusTop, radiusBottom, height, segments),
+          mat,
+        );
+        mesh.position.set(...position);
+        mesh.castShadow = true;
+        mesh.receiveShadow = true;
+        parent.add(mesh);
+        return mesh;
       }
-    };
 
-    let currentView = "outside";
-    let targetPosition = views.outside.position.clone();
-    let targetLookAt = views.outside.target.clone();
-    const lookAt = new THREE.Vector3(0, 1, 0);
+      function makeSign(parent, text, position, width = 3.4) {
+        const canvas = document.createElement("canvas");
+        canvas.width = 768;
+        canvas.height = 192;
+        const ctx = canvas.getContext("2d");
 
-    const panel = document.querySelector("#panel");
-    const nav = document.querySelector("#nav");
-    let cartCount = 0;
-    const wallNotes = ["Let coffee connect us.", "Grow at your own pace."];
+        ctx.fillStyle = "#2d4a3e";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = "#f7f2e9";
+        ctx.font = "bold 76px Georgia";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText(text, canvas.width / 2, canvas.height / 2);
 
-    // Freedom Wall notes pinned live in 3D (capped at 12 visible)
-    const wallNoteMeshes = [];
-    const wallNoteColors = ["#e8cf75", "#e79daf", "#b9d59c", "#b8d8df"];
-    function layoutWallNotes() {
-      wallNoteMeshes.forEach(m => interior.remove(m));
-      wallNoteMeshes.length = 0;
-      wallNotes.slice(0, 12).forEach((text, i) => {
+        const texture = new THREE.CanvasTexture(canvas);
+        texture.colorSpace = THREE.SRGBColorSpace;
+
+        const sign = new THREE.Mesh(
+          new THREE.PlaneGeometry(width, width * 0.25),
+          new THREE.MeshBasicMaterial({ map: texture }),
+        );
+        sign.position.set(...position);
+        parent.add(sign);
+        return sign;
+      }
+
+      function makePlant(parent, x, z, scale = 1) {
+        const group = new THREE.Group();
+        group.position.set(x, 0, z);
+        group.scale.setScalar(scale);
+        parent.add(group);
+
+        cylinder(group, 0.22, 0.3, 0.45, [0, 0.22, 0], mats.terracotta);
+        cylinder(group, 0.23, 0.23, 0.08, [0, 0.45, 0], mats.darkWood);
+
+        for (let i = 0; i < 7; i++) {
+          const leaf = new THREE.Mesh(
+            new THREE.ConeGeometry(0.13, 0.85, 7),
+            mats.leaf,
+          );
+          const angle = (i / 7) * Math.PI * 2;
+          leaf.position.set(
+            Math.cos(angle) * 0.18,
+            0.9,
+            Math.sin(angle) * 0.18,
+          );
+          leaf.rotation.z = Math.cos(angle) * 0.35;
+          leaf.rotation.x = Math.sin(angle) * 0.35;
+          leaf.castShadow = true;
+          group.add(leaf);
+        }
+      }
+
+      function makeFlowerPot(parent, x, z, scale = 1) {
+        const group = new THREE.Group();
+        group.position.set(x, 0, z);
+        group.scale.setScalar(scale);
+        parent.add(group);
+
+        cylinder(group, 0.2, 0.28, 0.35, [0, 0.18, 0], mats.terracotta);
+        for (let i = 0; i < 5; i++) {
+          const stem = new THREE.Mesh(
+            new THREE.CylinderGeometry(0.018, 0.018, 0.48, 5),
+            mats.leaf,
+          );
+          const a = (i / 5) * Math.PI * 2;
+          stem.position.set(Math.cos(a) * 0.12, 0.55, Math.sin(a) * 0.12);
+          group.add(stem);
+
+          const bloom = new THREE.Mesh(
+            new THREE.SphereGeometry(0.12, 8, 6),
+            i % 2 ? mats.pink : mats.yellow,
+          );
+          bloom.position.set(Math.cos(a) * 0.12, 0.82, Math.sin(a) * 0.12);
+          group.add(bloom);
+        }
+      }
+
+      // Outdoor entrance
+      box(outside, [34, 0.25, 34], [0, -0.28, 0], material("#a9bca6"), false);
+      box(outside, [13, 0.25, 7], [0, -0.1, 5.4], mats.tile, false);
+
+      // Facade with a central doorway opening
+      box(outside, [4.5, 4.6, 0.35], [-3.75, 2.2, 5.8], mats.cream);
+      box(outside, [4.5, 4.6, 0.35], [3.75, 2.2, 5.8], mats.cream);
+      box(outside, [4, 1.2, 0.35], [0, 4.9, 5.8], mats.cream);
+
+      box(outside, [13.2, 0.35, 1.3], [0, 4.5, 5.1], mats.green);
+      box(outside, [2.2, 3.3, 0.15], [0, 1.65, 5.95], mats.darkWood);
+      box(outside, [1.6, 2.75, 0.08], [0, 1.65, 5.83], mats.wood);
+      makeSign(outside, "SIBOL CAFE", [0, 3.75, 5.55], 4.2);
+
+      // Front windows
+      for (const x of [-4.05, 4.05]) {
+        const windowMesh = box(
+          outside,
+          [2.5, 1.9, 0.08],
+          [x, 2.25, 5.57],
+          mats.skyBlue,
+          false,
+        );
+        windowMesh.material = new THREE.MeshStandardMaterial({
+          color: "#a9cfca",
+          roughness: 0.3,
+          metalness: 0.05,
+        });
+      }
+
+      makePlant(outside, -6, 6.5, 1.5);
+      makePlant(outside, 6, 6.3, 1.35);
+      makeFlowerPot(outside, -5.1, 3.5, 1.1);
+      makeFlowerPot(outside, 5.1, 3.5, 1.1);
+
+      // Cafe interior
+      box(interior, [12, 0.25, 14], [0, -0.13, -1], mats.tile, false);
+      box(interior, [12, 5, 0.25], [0, 2.4, -8], mats.wall);
+      box(interior, [0.25, 5, 14], [-6, 2.4, -1], mats.wall);
+      box(interior, [0.25, 5, 14], [6, 2.4, -1], mats.wall);
+
+      // Back counter
+      box(interior, [5.3, 0.35, 1.35], [0, 1.15, -5.2], mats.wood);
+      box(interior, [5.0, 0.95, 1.15], [0, 0.55, -5.2], mats.green);
+      box(interior, [5.35, 0.12, 1.4], [0, 1.38, -5.2], mats.darkWood);
+
+      // Cup display and small counter props
+      for (let i = 0; i < 3; i++) {
+        cylinder(
+          interior,
+          0.17,
+          0.13,
+          0.38,
+          [-1.1 + i * 0.48, 1.65, -5.05],
+          mats.cream,
+          12,
+        );
+        cylinder(
+          interior,
+          0.18,
+          0.18,
+          0.045,
+          [-1.1 + i * 0.48, 1.86, -5.05],
+          mats.green,
+          12,
+        );
+      }
+      box(interior, [0.75, 0.45, 0.55], [1.55, 1.66, -5.15], mats.deepGreen);
+
+      // Stylized cashier + chibi Loreen greeter (real cashier art)
+      cylinder(interior, 0.35, 0.42, 0.8, [0, 1.9, -6.1], mats.terracotta, 12);
+      const head = new THREE.Mesh(
+        new THREE.SphereGeometry(0.34, 16, 12),
+        mats.cream,
+      );
+      head.position.set(0, 2.55, -6.1);
+      head.castShadow = true;
+      interior.add(head);
+      // Chibi Loreen billboard beside the counter — real cashier art, always faces camera
+      const chibiTex = new THREE.TextureLoader().load(
+        "assets/loreen-chibi.png",
+      );
+      const chibi = new THREE.Sprite(
+        new THREE.SpriteMaterial({ map: chibiTex, transparent: true }),
+      );
+      chibi.scale.set(1.0, 1.35, 1);
+      chibi.position.set(1.35, 2.1, -5.7);
+      interior.add(chibi);
+      // Hunyuan Loreen upgrade: real generated model replaces the PNG sprite
+      // once fetched (sprite stays as the offline/instant fallback).
+      // If she faces away on demo day, flip the Math.PI line below.
+      import("three/addons/loaders/GLTFLoader.js")
+        .then(({ GLTFLoader }) => {
+          new GLTFLoader().load(
+            "assets/models/chibi-hunyuan-web.glb",
+            (glb) => {
+              const loreen = glb.scene;
+              loreen.scale.setScalar(2.4);
+              loreen.position.set(1.55, 0, -6.35);
+              // loreen.rotation.y = Math.PI;
+              loreen.traverse((o) => {
+                if (o.isMesh) {
+                  o.castShadow = true;
+                }
+              });
+              interior.add(loreen);
+              interior.remove(chibi);
+            },
+            undefined,
+            () => {},
+          );
+        })
+        .catch(() => {});
+      cylinder(interior, 0.025, 0.025, 0.35, [0, 2.9, -6.1], mats.darkWood, 8);
+
+      // Tables, stools, and flower arrangements
+      for (const x of [-3.6, 3.4]) {
+        const tableTop = cylinder(
+          interior,
+          0.85,
+          0.85,
+          0.16,
+          [x, 1.0, 1.0],
+          mats.wood,
+          20,
+        );
+        cylinder(interior, 0.1, 0.16, 0.95, [x, 0.48, 1.0], mats.darkWood, 10);
+        makeFlowerPot(interior, x, 1.0, 0.55);
+
+        for (const offset of [-1.05, 1.05]) {
+          cylinder(
+            interior,
+            0.32,
+            0.32,
+            0.18,
+            [x + offset, 0.65, 1.0],
+            mats.green,
+            12,
+          );
+          cylinder(
+            interior,
+            0.08,
+            0.1,
+            0.62,
+            [x + offset, 0.32, 1.0],
+            mats.darkWood,
+            8,
+          );
+        }
+      }
+
+      makePlant(interior, -5.1, -1.5, 1.3);
+      makePlant(interior, 5.1, -1.5, 1.2);
+      makeFlowerPot(interior, -4.5, -4.2, 0.8);
+      makeFlowerPot(interior, 4.4, -4.1, 0.8);
+
+      // Freedom Wall on the right wall
+      const wallBoard = box(
+        interior,
+        [0.18, 3.0, 4.2],
+        [5.78, 2.25, -1.7],
+        mats.darkWood,
+      );
+      wallBoard.rotation.y = Math.PI / 2;
+
+      const wallPanel = new THREE.Mesh(
+        new THREE.PlaneGeometry(3.8, 2.55),
+        mats.cream,
+      );
+      wallPanel.position.set(5.66, 2.25, -1.7);
+      wallPanel.rotation.y = -Math.PI / 2;
+      interior.add(wallPanel);
+
+      // A few decorative sticky notes on the wall
+      const noteColors = ["#e8cf75", "#e79daf", "#b9d59c", "#b8d8df"];
+      for (let i = 0; i < 4; i++) {
         const note = new THREE.Mesh(
-          new THREE.PlaneGeometry(0.5, 0.5),
-          new THREE.MeshBasicMaterial({ color: wallNoteColors[i % 4] })
+          new THREE.PlaneGeometry(0.65, 0.65),
+          new THREE.MeshBasicMaterial({ color: noteColors[i] }),
         );
-        const c = i % 3, r = Math.floor(i / 3);
-        note.position.set(5.60, 2.9 - r * 0.68, -2.9 + c * 0.72);
+        note.position.set(
+          5.62,
+          2.7 - (i % 2) * 0.85,
+          -2.7 + Math.floor(i / 2) * 1.5,
+        );
         note.rotation.y = -Math.PI / 2;
-        note.rotation.z = (i % 2 ? -1 : 1) * 0.05;
         interior.add(note);
-        wallNoteMeshes.push(note);
+      }
+
+      // Interactive 3D markers
+      const hotspotMeshes = [];
+      const hotspotMaterial = new THREE.MeshStandardMaterial({
+        color: "#f1cf6d",
+        emissive: "#d89d36",
+        emissiveIntensity: 1.2,
+        roughness: 0.35,
       });
-    }
 
-    function setView(view) {
-      if (!views[view]) return;
-      currentView = view;
-      targetPosition.copy(views[view].position);
-      targetLookAt.copy(views[view].target);
-      outside.visible = view === "outside";
-      interior.visible = view !== "outside";
-      if (view === "wall") layoutWallNotes();
-      renderUI();
-    }
+      function addHotspot(label, position, view) {
+        const marker = new THREE.Mesh(
+          new THREE.SphereGeometry(0.22, 16, 12),
+          hotspotMaterial,
+        );
+        marker.position.set(...position);
+        marker.userData = { label, view, baseY: position[1] };
+        marker.castShadow = true;
+        interior.add(marker);
 
-    function renderNav() {
-      const destinations = [
-        ["Entrance", "outside"],
-        ["Cafe", "interior"],
-        ["Counter", "counter"],
-        ["Bites & Blooms", "menu"],
-        ["Freedom Wall", "wall"]
-      ];
+        const ring = new THREE.Mesh(
+          new THREE.TorusGeometry(0.34, 0.025, 8, 24),
+          new THREE.MeshBasicMaterial({ color: "#fff1bb" }),
+        );
+        ring.position.copy(marker.position);
+        ring.rotation.x = Math.PI / 2;
+        interior.add(ring);
 
-      nav.innerHTML = destinations
-        .map(([label, view]) =>
-          `<button data-view="${view}">${label}</button>`
-        )
-        .join("");
+        hotspotMeshes.push(marker);
+      }
 
-      nav.querySelectorAll("[data-view]").forEach(button => {
-        button.addEventListener("click", () => setView(button.dataset.view));
-      });
-    }
+      addHotspot("Counter", [0, 2.35, -3.6], "counter");
+      addHotspot("Bites & Blooms", [-2.5, 2.05, -3.6], "menu");
+      addHotspot("Freedom Wall", [4.9, 2.2, -1.7], "wall");
 
-    function renderUI() {
-      if (currentView === "outside") {
-        panel.innerHTML = `
+      // Guided camera views
+      const views = {
+        outside: {
+          position: new THREE.Vector3(0, 3.7, 14.5),
+          target: new THREE.Vector3(0, 2.0, 5.3),
+        },
+        interior: {
+          position: new THREE.Vector3(0, 5.0, 12),
+          target: new THREE.Vector3(0, 1.5, -2.0),
+        },
+        counter: {
+          position: new THREE.Vector3(0, 2.9, 0.2),
+          target: new THREE.Vector3(0, 1.6, -5.1),
+        },
+        menu: {
+          position: new THREE.Vector3(-2.2, 2.8, 0.3),
+          target: new THREE.Vector3(-2.2, 1.2, -5.0),
+        },
+        wall: {
+          position: new THREE.Vector3(3.0, 2.7, 0.7),
+          target: new THREE.Vector3(5.55, 2.0, -1.7),
+        },
+      };
+
+      let currentView = "outside";
+      let targetPosition = views.outside.position.clone();
+      let targetLookAt = views.outside.target.clone();
+      const lookAt = new THREE.Vector3(0, 1, 0);
+
+      const panel = document.querySelector("#panel");
+      const nav = document.querySelector("#nav");
+      let cartCount = 0;
+      const wallNotes = ["Let coffee connect us.", "Grow at your own pace."];
+
+      // Freedom Wall notes pinned live in 3D (capped at 12 visible)
+      const wallNoteMeshes = [];
+      const wallNoteColors = ["#e8cf75", "#e79daf", "#b9d59c", "#b8d8df"];
+      function layoutWallNotes() {
+        wallNoteMeshes.forEach((m) => interior.remove(m));
+        wallNoteMeshes.length = 0;
+        wallNotes.slice(0, 12).forEach((text, i) => {
+          const note = new THREE.Mesh(
+            new THREE.PlaneGeometry(0.5, 0.5),
+            new THREE.MeshBasicMaterial({ color: wallNoteColors[i % 4] }),
+          );
+          const c = i % 3,
+            r = Math.floor(i / 3);
+          note.position.set(5.6, 2.9 - r * 0.68, -2.9 + c * 0.72);
+          note.rotation.y = -Math.PI / 2;
+          note.rotation.z = (i % 2 ? -1 : 1) * 0.05;
+          interior.add(note);
+          wallNoteMeshes.push(note);
+        });
+      }
+
+      function setView(view) {
+        if (!views[view]) return;
+        currentView = view;
+        targetPosition.copy(views[view].position);
+        targetLookAt.copy(views[view].target);
+        outside.visible = view === "outside";
+        interior.visible = view !== "outside";
+        if (view === "wall") layoutWallNotes();
+        renderUI();
+      }
+
+      function renderNav() {
+        const destinations = [
+          ["Entrance", "outside"],
+          ["Cafe", "interior"],
+          ["Counter", "counter"],
+          ["Bites & Blooms", "menu"],
+          ["Freedom Wall", "wall"],
+        ];
+
+        nav.innerHTML = destinations
+          .map(
+            ([label, view]) => `<button data-view="${view}">${label}</button>`,
+          )
+          .join("");
+
+        nav.querySelectorAll("[data-view]").forEach((button) => {
+          button.addEventListener("click", () => setView(button.dataset.view));
+        });
+      }
+
+      function renderUI() {
+        if (currentView === "outside") {
+          panel.innerHTML = `
           <h1>Welcome to Sibol</h1>
           <p>A little coffee, a little greenery, and a place to connect.</p>
           <button data-action="enter">Enter the cafe</button>
         `;
-      } else if (currentView === "interior") {
-        panel.innerHTML = `
+        } else if (currentView === "interior") {
+          panel.innerHTML = `
           <h2>Make yourself at home</h2>
           <p>Choose a glowing marker, or use the navigation above to explore.</p>
           <div class="row">
@@ -623,8 +733,8 @@
             <button class="secondary" data-view="wall">Freedom Wall</button>
           </div>
         `;
-      } else if (currentView === "counter") {
-        panel.innerHTML = `
+        } else if (currentView === "counter") {
+          panel.innerHTML = `
           <h2>Hello, welcome in!</h2>
           <p>Loreen is ready to help. Browse today's bites and blooms to start a demo order.</p>
           <div class="row">
@@ -633,8 +743,8 @@
           </div>
           <p style="margin:12px 0 0">Demo cart: <strong class="cart-count">${cartCount}</strong> item(s)</p>
         `;
-      } else if (currentView === "menu") {
-        panel.innerHTML = `
+        } else if (currentView === "menu") {
+          panel.innerHTML = `
           <h2>Bites &amp; Blooms</h2>
           <p>Real menu — prices as served at Sibol.</p>
           <div class="product">
@@ -658,8 +768,8 @@
             <button class="secondary" data-view="interior">Back to cafe</button>
           </div>
         `;
-      } else {
-        panel.innerHTML = `
+        } else {
+          panel.innerHTML = `
           <h2>Freedom Wall</h2>
           <p>Leave a kind thought for someone visiting Sibol.</p>
           <form id="note-form">
@@ -667,110 +777,122 @@
             <div class="row"><button type="submit">Pin my note</button></div>
           </form>
           <div id="notes">
-            ${wallNotes.map(note => `<div class="note"></div>`).join("")}
+            ${wallNotes.map((note) => `<div class="note"></div>`).join("")}
           </div>
           <div class="row">
             <button class="secondary" data-view="interior">Back to cafe</button>
           </div>
         `;
 
-        panel.querySelectorAll(".note").forEach((node, index) => {
-          node.textContent = wallNotes[index];
+          panel.querySelectorAll(".note").forEach((node, index) => {
+            node.textContent = wallNotes[index];
+          });
+
+          panel
+            .querySelector("#note-form")
+            .addEventListener("submit", (event) => {
+              event.preventDefault();
+              const value = new FormData(event.currentTarget)
+                .get("note")
+                ?.toString()
+                .trim();
+              if (!value) return;
+              wallNotes.unshift(value);
+              layoutWallNotes();
+              renderUI();
+            });
+        }
+
+        panel.querySelectorAll("[data-view]").forEach((button) => {
+          button.addEventListener("click", () => setView(button.dataset.view));
         });
 
-        panel.querySelector("#note-form").addEventListener("submit", event => {
-          event.preventDefault();
-          const value = new FormData(event.currentTarget).get("note")?.toString().trim();
-          if (!value) return;
-          wallNotes.unshift(value);
-          layoutWallNotes();
-          renderUI();
+        panel
+          .querySelector('[data-action="enter"]')
+          ?.addEventListener("click", () => {
+            setView("interior");
+          });
+
+        panel.querySelectorAll("[data-add]").forEach((button) => {
+          button.addEventListener("click", () => {
+            cartCount++;
+            renderUI();
+          });
         });
       }
 
-      panel.querySelectorAll("[data-view]").forEach(button => {
-        button.addEventListener("click", () => setView(button.dataset.view));
+      renderNav();
+      renderUI();
+
+      const raycaster = new THREE.Raycaster();
+      const pointer = new THREE.Vector2();
+
+      renderer.domElement.addEventListener("pointermove", (event) => {
+        pointer.set(
+          (event.clientX / window.innerWidth) * 2 - 1,
+          -(event.clientY / window.innerHeight) * 2 + 1,
+        );
+        raycaster.setFromCamera(pointer, camera);
+        const hits = raycaster.intersectObjects(hotspotMeshes, false);
+        renderer.domElement.style.cursor = hits.length ? "pointer" : "default";
       });
 
-      panel.querySelector('[data-action="enter"]')?.addEventListener("click", () => {
-        setView("interior");
+      renderer.domElement.addEventListener("click", (event) => {
+        pointer.set(
+          (event.clientX / window.innerWidth) * 2 - 1,
+          -(event.clientY / window.innerHeight) * 2 + 1,
+        );
+        raycaster.setFromCamera(pointer, camera);
+        const hits = raycaster.intersectObjects(hotspotMeshes, false);
+        if (hits.length && currentView === "interior") {
+          setView(hits[0].object.userData.view);
+        }
       });
 
-      panel.querySelectorAll("[data-add]").forEach(button => {
-        button.addEventListener("click", () => {
-          cartCount++;
-          renderUI();
+      const clock = new THREE.Clock();
+
+      function animate() {
+        requestAnimationFrame(animate);
+        const time = clock.getElapsedTime();
+
+        camera.position.lerp(
+          targetPosition,
+          1 - Math.exp(-3.2 * clock.getDelta()),
+        );
+        lookAt.lerp(targetLookAt, 0.075);
+        camera.lookAt(lookAt);
+
+        hotspotMeshes.forEach((marker, index) => {
+          marker.position.y =
+            marker.userData.baseY + Math.sin(time * 2.2 + index) * 0.09;
         });
-      });
-    }
 
-    renderNav();
-    renderUI();
-
-    const raycaster = new THREE.Raycaster();
-    const pointer = new THREE.Vector2();
-
-    renderer.domElement.addEventListener("pointermove", event => {
-      pointer.set(
-        (event.clientX / window.innerWidth) * 2 - 1,
-        -(event.clientY / window.innerHeight) * 2 + 1
-      );
-      raycaster.setFromCamera(pointer, camera);
-      const hits = raycaster.intersectObjects(hotspotMeshes, false);
-      renderer.domElement.style.cursor = hits.length ? "pointer" : "default";
-    });
-
-    renderer.domElement.addEventListener("click", event => {
-      pointer.set(
-        (event.clientX / window.innerWidth) * 2 - 1,
-        -(event.clientY / window.innerHeight) * 2 + 1
-      );
-      raycaster.setFromCamera(pointer, camera);
-      const hits = raycaster.intersectObjects(hotspotMeshes, false);
-      if (hits.length && currentView === "interior") {
-        setView(hits[0].object.userData.view);
+        renderer.render(scene, camera);
       }
-    });
 
-    const clock = new THREE.Clock();
+      camera.position.copy(views.outside.position);
+      camera.lookAt(views.outside.target);
+      animate();
 
-    function animate() {
-      requestAnimationFrame(animate);
-      const time = clock.getElapsedTime();
+      // Portrait phones collapse horizontal FOV — stand the entrance camera
+      // back and widen it, otherwise the sign fills the whole screen.
+      function frameForAspect() {
+        const wide = window.innerWidth / window.innerHeight >= 0.9;
+        views.outside.position.set(0, wide ? 3.7 : 6.8, wide ? 14.5 : 22.5);
+        camera.fov = wide ? 48 : 64;
+        camera.updateProjectionMatrix();
+        if (currentView === "outside")
+          targetPosition.copy(views.outside.position);
+      }
 
-      camera.position.lerp(targetPosition, 1 - Math.exp(-3.2 * clock.getDelta()));
-      lookAt.lerp(targetLookAt, 0.075);
-      camera.lookAt(lookAt);
-
-      hotspotMeshes.forEach((marker, index) => {
-        marker.position.y = marker.userData.baseY + Math.sin(time * 2.2 + index) * 0.09;
+      window.addEventListener("resize", () => {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        frameForAspect();
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.75));
+        renderer.setSize(window.innerWidth, window.innerHeight);
       });
-
-      renderer.render(scene, camera);
-    }
-
-    camera.position.copy(views.outside.position);
-    camera.lookAt(views.outside.target);
-    animate();
-
-    // Portrait phones collapse horizontal FOV — stand the entrance camera
-    // back and widen it, otherwise the sign fills the whole screen.
-    function frameForAspect() {
-      const wide = window.innerWidth / window.innerHeight >= 0.9;
-      views.outside.position.set(0, wide ? 3.7 : 6.8, wide ? 14.5 : 22.5);
-      camera.fov = wide ? 48 : 64;
-      camera.updateProjectionMatrix();
-      if (currentView === "outside") targetPosition.copy(views.outside.position);
-    }
-
-    window.addEventListener("resize", () => {
-      camera.aspect = window.innerWidth / window.innerHeight;
-      camera.updateProjectionMatrix();
       frameForAspect();
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.75));
-      renderer.setSize(window.innerWidth, window.innerHeight);
-    });
-    frameForAspect();
-  </script>
-</body>
+    </script>
+  </body>
 </html>
