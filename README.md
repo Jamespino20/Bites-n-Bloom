@@ -9,7 +9,7 @@ Static prototype for the **Sibol Cafe: Bites & Blooms** title defense
   (ordering demo) straight from disk.
 - **Full 3D:** `npx -y serve -l 8000` here, then
   `http://localhost:8000/prototype-cafe.html` (3D room tab).
-- **Live:** _(Vercel URL slot — paste after dashboard import)_
+- **Live:** https://sibolcoffeeandflowers-kloudexa.vercel.app
 
 ## What's inside
 
