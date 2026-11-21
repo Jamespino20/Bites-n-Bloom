@@ -435,6 +435,10 @@
       box(outside, [13.2, 0.35, 1.3], [0, 4.5, 5.1], mats.green);
       box(outside, [2.2, 3.3, 0.15], [0, 1.65, 5.95], mats.darkWood);
       box(outside, [1.6, 2.75, 0.08], [0, 1.65, 5.83], mats.wood);
+      // glass door panel + hanging OPEN sign + terracotta doormat
+      box(outside, [1.0, 1.6, 0.05], [0, 1.9, 5.97], mats.glass, false);
+      makeSign(outside, "OPEN", [0, 3.6, 5.9], 1.5);
+      box(outside, [2.4, 0.06, 1.1], [0, 0.06, 7.2], mats.terracotta, false);
       makeSign(outside, "SIBOL CAFE", [0, 3.75, 5.55], 4.2);
 
       // Front windows
@@ -492,15 +496,7 @@
       }
       box(interior, [0.75, 0.45, 0.55], [1.55, 1.66, -5.15], mats.deepGreen);
 
-      // Stylized cashier + chibi Loreen greeter (real cashier art)
-      cylinder(interior, 0.35, 0.42, 0.8, [0, 1.9, -6.1], mats.terracotta, 12);
-      const head = new THREE.Mesh(
-        new THREE.SphereGeometry(0.34, 16, 12),
-        mats.cream,
-      );
-      head.position.set(0, 2.55, -6.1);
-      head.castShadow = true;
-      interior.add(head);
+      // Chibi Loreen greets here now (capsule placeholder retired)
       // Chibi Loreen billboard beside the counter — real cashier art, always faces camera
       const chibiTex = new THREE.TextureLoader().load(
         "assets/loreen-chibi.png",
@@ -535,7 +531,7 @@
           );
         })
         .catch(() => {});
-      cylinder(interior, 0.025, 0.025, 0.35, [0, 2.9, -6.1], mats.darkWood, 8);
+      // (cashier placeholder fully retired — Loreen owns this counter)
 
       // Tables, stools, and flower arrangements
       for (const x of [-3.6, 3.4]) {
@@ -781,16 +777,16 @@
           target: new THREE.Vector3(0, 1.5, -2.0),
         },
         counter: {
-          position: new THREE.Vector3(2.2, 2.6, -3.7),
-          target: new THREE.Vector3(1.55, 1.55, -6.35),
+          position: new THREE.Vector3(2.4, 2.6, -3.4),
+          target: new THREE.Vector3(2.4, 1.5, -6.4),
         },
         menu: {
           position: new THREE.Vector3(-2.2, 2.8, 0.3),
           target: new THREE.Vector3(-2.2, 1.2, -5.0),
         },
         wall: {
-          position: new THREE.Vector3(3.0, 2.7, 0.7),
-          target: new THREE.Vector3(5.55, 2.0, -1.7),
+          position: new THREE.Vector3(2.2, 2.3, -1.7),
+          target: new THREE.Vector3(5.66, 2.2, -1.7),
         },
       };
 
@@ -843,7 +839,7 @@
         wallNotes.slice(0, 12).forEach((text, i) => {
           const bg = wallNoteColors[i % 4];
           const note = new THREE.Mesh(
-            new THREE.PlaneGeometry(0.62, 0.62),
+            new THREE.PlaneGeometry(0.8, 0.8),
             new THREE.MeshBasicMaterial({
               map: noteTexture(text, bg),
               transparent: true,
