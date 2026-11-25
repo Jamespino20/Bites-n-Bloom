@@ -586,7 +586,8 @@
       box(interior, [0.2, 3.25, 0.14], [5.79, 2.25, 0.4], mats.darkWood);
       box(interior, [0.2, 0.14, 4.2], [5.79, 0.78, -1.7], mats.darkWood);
       box(interior, [0.2, 0.14, 4.2], [5.79, 3.72, -1.7], mats.darkWood);
-      makeSign(interior, "FREEDOM WALL", [5.7, 4.0, -1.7], 3.2);
+      const wallSign = makeSign(interior, "FREEDOM WALL", [5.7, 4.0, -1.7], 3.2);
+      wallSign.rotation.y = -Math.PI / 2;
 
       // ---- Interior design upgrade: menu board, fridge, sofa, rug, lights ----
       function makeMenuBoard(parent, position, width = 4.6) {
@@ -777,8 +778,8 @@
           target: new THREE.Vector3(0, 1.5, -2.0),
         },
         counter: {
-          position: new THREE.Vector3(2.4, 2.6, -3.4),
-          target: new THREE.Vector3(2.4, 1.5, -6.4),
+          position: new THREE.Vector3(2.4, 2.45, -4.4),
+          target: new THREE.Vector3(1.55, 1.55, -5.9),
         },
         menu: {
           position: new THREE.Vector3(-2.2, 2.8, 0.3),
@@ -856,11 +857,30 @@
         });
       }
 
+      // POV walk state — setView builds a bezier stroll, animate() walks it
+      let walking = false,
+        walkT0 = 0;
+      const WALK_MS = 2400;
+      const walkFrom = {
+        pos: new THREE.Vector3(),
+        look: new THREE.Vector3(),
+      };
+      const walkCtrl = new THREE.Vector3();
       function setView(view) {
         if (!views[view]) return;
+        walkFrom.pos.copy(camera.position);
+        walkFrom.look.copy(lookAt);
         currentView = view;
         targetPosition.copy(views[view].position);
         targetLookAt.copy(views[view].target);
+        // arc the stroll: midpoint lifted for a natural walking arc
+        walkCtrl
+          .copy(walkFrom.pos)
+          .add(targetPosition)
+          .multiplyScalar(0.5);
+        walkCtrl.y = Math.max(walkFrom.pos.y, targetPosition.y) + 0.9;
+        walkT0 = performance.now();
+        walking = true;
         outside.visible = view === "outside";
         interior.visible = view !== "outside";
         if (view === "wall") layoutWallNotes();
@@ -914,6 +934,9 @@
             <button class="secondary" data-view="interior">Back to cafe</button>
           </div>
           <p style="margin:12px 0 0">Demo cart: <strong class="cart-count">${cartCount}</strong> item(s)</p>
+          <p style="margin:10px 0 0">Have a code? Claim it here:</p>
+          <div class="row"><input id="claim-code" maxlength="7" placeholder="SB-XXXX"><button data-claim>Check</button></div>
+          <div id="claim-status"></div>
         `;
         } else if (currentView === "menu") {
           panel.innerHTML = `
@@ -991,6 +1014,19 @@
             renderUI();
           });
         });
+
+        const claimBtn = panel.querySelector("[data-claim]");
+        claimBtn?.addEventListener("click", () => {
+          const v = panel
+            .querySelector("#claim-code")
+            .value.trim()
+            .toUpperCase();
+          panel.querySelector("#claim-status").innerHTML = /^SB-\d{4}$/.test(
+            v,
+          )
+            ? `<p>Order <strong>${v}</strong> — <strong>Ready for pickup.</strong> Show this screen at the counter.</p>`
+            : `<p>Enter a code like SB-4821 (demo accepts any 4 digits).</p>`;
+        });
       }
 
       renderNav();
@@ -1027,11 +1063,31 @@
         requestAnimationFrame(animate);
         const time = clock.getElapsedTime();
 
-        camera.position.lerp(
-          targetPosition,
-          1 - Math.exp(-3.2 * clock.getDelta()),
-        );
-        lookAt.lerp(targetLookAt, 0.075);
+        if (walking) {
+          const t = Math.min((performance.now() - walkT0) / WALK_MS, 1);
+          const e =
+            t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+          const a = walkFrom.pos,
+            c = walkCtrl,
+            b = targetPosition,
+            u = 1 - e;
+          camera.position.set(
+            u * u * a.x + 2 * u * e * c.x + e * e * b.x,
+            u * u * a.y +
+              2 * u * e * c.y +
+              e * e * b.y +
+              Math.sin(e * Math.PI * 6) * 0.05 * (1 - e),
+            u * u * a.z + 2 * u * e * c.z + e * e * b.z,
+          );
+          lookAt.lerpVectors(walkFrom.look, targetLookAt, e);
+          if (t >= 1) walking = false;
+        } else {
+          camera.position.lerp(
+            targetPosition,
+            1 - Math.exp(-3.2 * clock.getDelta()),
+          );
+          lookAt.lerp(targetLookAt, 0.075);
+        }
         camera.lookAt(lookAt);
 
         hotspotMeshes.forEach((marker, index) => {
