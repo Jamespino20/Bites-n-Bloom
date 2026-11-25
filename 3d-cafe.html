@@ -577,15 +577,17 @@
       // Freedom Wall — corkboard with live pinned notes (text rendered per note)
       const corkBoard = box(
         interior,
-        [0.16, 3.0, 4.2],
-        [5.79, 2.25, -1.7],
+        [0.12, 2.3, 3.1],
+        [5.78, 2.2, -1.7],
         mats.cork,
       );
-      corkBoard.rotation.y = Math.PI / 2;
-      box(interior, [0.2, 3.25, 0.14], [5.79, 2.25, -3.8], mats.darkWood);
-      box(interior, [0.2, 3.25, 0.14], [5.79, 2.25, 0.4], mats.darkWood);
-      box(interior, [0.2, 0.14, 4.2], [5.79, 0.78, -1.7], mats.darkWood);
-      box(interior, [0.2, 0.14, 4.2], [5.79, 3.72, -1.7], mats.darkWood);
+      // (unrotated: thin in x, wide in z — the old rotation swung 4.2m of cork through the room)
+      box(interior, [0.1, 2.9, 3.7], [5.88, 2.25, -1.7], mats.cream);
+      box(interior, [0.12, 2.3, 3.1], [5.78, 2.2, -1.7], mats.cork);
+      box(interior, [0.12, 2.55, 0.12], [5.78, 2.2, -3.32], mats.darkWood);
+      box(interior, [0.12, 2.55, 0.12], [5.78, 2.2, -0.08], mats.darkWood);
+      box(interior, [0.12, 0.12, 3.4], [5.78, 3.42, -1.7], mats.darkWood);
+      box(interior, [0.12, 0.12, 3.4], [5.78, 0.98, -1.7], mats.darkWood);
       const wallSign = makeSign(interior, "FREEDOM WALL", [5.7, 4.0, -1.7], 3.2);
       wallSign.rotation.y = -Math.PI / 2;
 
